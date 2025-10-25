@@ -26,11 +26,3 @@ export default class Queue {
         this.list.displayList();
     }
 }
-
-const q = new Queue();
-q.enqueue(3);
-q.enqueue(5);
-q.enqueue(7);
-q.display(); // 3 --> 5 --> 7 --> NULL
-q.dequeue();
-q.display(); // 5 --> 7 --> NULL

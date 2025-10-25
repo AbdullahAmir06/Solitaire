@@ -34,11 +34,3 @@ export default class Stack {
     }
 
 }
-const s= new Stack();
-s.push(3);
-s.push(2);
-s.push(1);
-s.display();
-console.log("Top Element:",s.top());
-s.pop();
-s.display();
