@@ -22,7 +22,7 @@ export default class Stack {
         return this.List.isEmpty();
     }
 
-    top() {
+    top() {     // return the top element of stack
         if (this.isEmpty()) {
             return null;
         }
@@ -31,6 +31,18 @@ export default class Stack {
 
     display() {
         this.List.displayList();
+    }
+
+    size() {    // added a function to find the size of stack
+        if (this.isEmpty())
+            return 0;
+        let size = 0;
+        let temp = this.List.getHead();
+        while (temp) {
+            size++;
+            temp = temp.next;
+        }
+        return size;
     }
 
 }

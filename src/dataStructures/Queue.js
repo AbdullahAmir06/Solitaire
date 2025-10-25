@@ -10,8 +10,14 @@ export default class Queue {
     }
 
     dequeue() {
+        if (this.list.isEmpty())
+            return null;
+
+        const headNode = this.list.getHead();
         this.list.deleteFromStart();
+        return headNode.data;  // return the card (value stored in the node)
     }
+
 
     peek() {
         const head = this.list.getHead();
@@ -24,5 +30,17 @@ export default class Queue {
 
     display() {
         this.list.displayList();
+    }
+
+    size() {    // added a function to find the size of queue
+        if (this.isEmpty())
+            return 0;
+        let size = 0;
+        let temp = this.list.getHead();
+        while (temp) {
+            size++;
+            temp = temp.next;
+        }
+        return size;
     }
 }

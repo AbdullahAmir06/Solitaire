@@ -23,6 +23,14 @@ export default class LinkedList {
         return this.head;
     }
 
+    insertSubListAtHead(subListHead) {  // used to attach sub list to head when the user 
+        let last = subListHead;
+        while (last.next)
+            last = last.next;
+        last.next = this.head;
+        this.head = subListHead;
+    }
+
     insertAtEnd(x) {
         const newNode = new Node(x);
         if (!this.head) {
@@ -94,7 +102,7 @@ export default class LinkedList {
         let current = this.head;
         while (current && current.next) {
             if (current.next.data === x) {
-                current.next = current.next.data;
+                current.next = current.next.next;
                 found = true;
             }
             else {
@@ -110,7 +118,29 @@ export default class LinkedList {
             if (temp.data === x) return true;
             temp = temp.next;
         }
-        return false;
+        return true;
+    }
+
+    findNodeByCard(x) {
+        let temp = this.head;
+        while (temp) {
+            if (temp.data === x) return temp; // return Node
+            temp = temp.next;
+        }
+        return null;
+    }
+
+    detactSubList(startNode) {   // it remove the sub list starting at a Node
+        if (this.head === startNode) {
+            this.head = null;
+            return startNode;
+        }
+        let temp = this.head;
+        while (temp.next !== startNode) {
+            temp = temp.next;
+        }
+        temp.next = null;
+        return startNode;
     }
 
     displayList() {
@@ -179,5 +209,5 @@ export default class LinkedList {
         temp.next = list2;
         return list1;
     }
-    
+
 }
