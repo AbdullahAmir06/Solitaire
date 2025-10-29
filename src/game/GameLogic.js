@@ -2,6 +2,7 @@ import Card from "./Card.js";
 
 export default class GameLogic {
     constructor() {
+        this.cardMap = new Map();
         this.deck = [];
         this.tableau = []; // it will contain 7 piles (list)
         this.foundations = {}; // 4 suits (stack)
@@ -36,13 +37,16 @@ export default class GameLogic {
                 if (i == j)
                     card.faceUp = true;
                 pile.insertAtEnd(card);
+                this.cardMap.set(card, { pile: `tableau${i+1}`, faceUp: card.faceUp });
             }
             this.tableau.push(pile);
         }
 
         this.stock = new Queue();
-        for (; deckIndex < this.deck.length; deckIndex++)
+        for (; deckIndex < this.deck.length; deckIndex++) {
             this.stock.enqueue(this.deck[deckIndex])
+            this.cardMap.set(this.deck[deckIndex], { pile: "stock", faceUp: false });
+        }
     }
 
     initializeGame(LinkedList, Stack, Queue) {
@@ -88,12 +92,19 @@ export default class GameLogic {
         if (!this.canMoveToTableau(startSequence.data, targetPile))
             return false;
 
-        const detachedSequence = sourcePile.detactSubList(startSequence);
+        const detachedSequence = sourcePile.detachSubList(startSequence);
 
         targetPile.insertSubListAtHead(detachedSequence);
 
         if (sourcePile.head)
             sourcePile.head.data.faceUp = true;
+
+        const tIndex = this.getTableauIndex(targetPile);
+        let node = detachedSequence;
+        while (node) {
+            this.cardMap.set(node.data, { pile: `tableau${tIndex+1}`, faceUp: node.data.faceUp });
+            node = node.next;
+        }
         return true;
 
 
@@ -107,9 +118,14 @@ export default class GameLogic {
         if (this.canMoveToTableau(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.insertAtStart(card);
+            const index = this.getTableauIndex(targetPile);
+            this.cardMap.set(card, { pile: `tableau${index+1}`, faceUp: card.faceUp });
 
-            if (!sourcePile.isEmpty())
+            if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
+                const srcIndex = this.getTableauIndex(sourcePile);
+                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex+1}`, faceUp: true });
+            }
             return true;
         }
         return false;
@@ -133,9 +149,14 @@ export default class GameLogic {
         if (this.canMoveToFoundation(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.insertAtStart(card);
+            const key = this.getFoundationKeyByPile(targetPile);
+            this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
 
-            if (!sourcePile.isEmpty())
+            if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
+                const srcIndex = this.getTableauIndex(sourcePile);
+                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex+1}`, faceUp: true });
+            }
             return true;
         }
         return false;
@@ -150,10 +171,12 @@ export default class GameLogic {
     }
 
     showTop3CardsFromWaste() {
-        for (let i = 0; i < this.waste.length - 3; i++) {
+        for (let i = 0; i < this.waste.length; i++) {
             this.waste[i].faceUp = false;
+            this.cardMap.set(this.waste[i], { pile: "waste", faceUp: this.waste[i].faceUp });
         }
         for (let i = Math.max(0, this.waste.length - 3); i < this.waste.length; i++) {
+            this.cardMap.set(this.waste[i], { pile: "waste", faceUp: this.waste[i].faceUp });
             this.waste[i].faceUp = true;
         }
 
@@ -165,6 +188,7 @@ export default class GameLogic {
             const card = this.stock.dequeue();
             card.faceUp = true;
             this.waste.push(card);
+            this.cardMap.set(card, { pile: "waste", faceUp: card.faceUp });
         }
         this.showTop3CardsFromWaste()
     }
@@ -173,15 +197,25 @@ export default class GameLogic {
     moveWasteCard(indexFromTop, targetPile, isFoundation) {  // move card from waste pile to tableau or foundation based on isFoundation 
         const cardIndex = this.waste.length - 1 - indexFromTop;
         const card = this.waste[cardIndex];
+        if (!card) return false;
 
-        if ((isFoundation && this.canMoveToFoundation(card, targetPile)) ||
-            (!isFoundation && this.canMoveToTableau(card, targetPile))) {
+        if (isFoundation) {
+            if (!this.canMoveToFoundation(card, targetPile)) return false;
             this.waste.splice(cardIndex, 1);
             targetPile.insertAtStart(card);
-            return true;
+            const key = this.getFoundationKeyByPile(targetPile);
+            this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
+        } else {
+            if (!this.canMoveToTableau(card, targetPile)) return false;
+            this.waste.splice(cardIndex, 1);
+            targetPile.insertAtStart(card);
+            const tIndex = this.getTableauIndex(targetPile);
+            this.cardMap.set(card, { pile: `tableau${tIndex+1}`, faceUp: card.faceUp });
         }
-        return false;
+
+        return true;
     }
+
 
 
     recycleWasteToStock() { // it remove and place it in the FIFO order as in the queue has already
@@ -190,8 +224,30 @@ export default class GameLogic {
             const card = this.waste.shift(); // remove from start
             card.faceUp = false;
             this.stock.enqueue(card);
+            this.cardMap.set(card, { pile: "stock", faceUp: card.faceUp });
         }
     }
+
+    // function for map
+    getTableauIndex(pile) {
+        return this.tableau.indexOf(pile); // returns 0..6 or -1
+    }
+
+    // funciton for map it return foundation key string (e.g. "hearts")
+    getFoundationKeyByPile(pile) {
+        for (const key of Object.keys(this.foundations)) {
+            if (this.foundations[key] === pile) return key;
+        }
+        return null;
+    }
+
+    // it is just for display of cards via map 
+    logCardMap() {
+        for (let [card, info] of this.cardMap.entries()) {
+            console.log(`${card.rank} of ${card.suit} → ${info.pile} (faceUp=${info.faceUp})`);
+        }
+    }
+
 
 
 }

@@ -130,7 +130,7 @@ export default class LinkedList {
         return null;
     }
 
-    detactSubList(startNode) {   // it remove the sub list starting at a Node
+    detachSubList(startNode) {   // it remove the sub list starting at a Node
         if (this.head === startNode) {
             this.head = null;
             return startNode;

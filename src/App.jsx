@@ -17,7 +17,8 @@ function App() {
     console.log("Tableau:", game.tableau);
     console.log("Stock:", game.stock);
     console.log("Foundation:", game.foundations);
-
+    game.logCardMap();
+    
     // Example test 1: Draw from stock
     console.log("\n--- Drawing from stock ---");
     game.drawFromStock();
@@ -40,10 +41,11 @@ function App() {
       console.log("Multi-card move result:", ok);
     }
     console.log("Updated tableau:", game.tableau);
-
+    
     // Example test 3: Print a specific pile
     console.log("\n--- Display first tableau pile ---");
     game.tableau[0].displayList();
+    game.logCardMap();
 
   }, [game]);
 
