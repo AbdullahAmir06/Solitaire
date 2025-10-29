@@ -22,6 +22,8 @@ function App() {
     console.log("\n--- Drawing from stock ---");
     game.drawFromStock();
     console.log("Waste pile:", game.waste);
+    game.drawFromStock();
+    console.log("Waste pile:", game.waste);
 
     // Example test 2: Try moving multiple cards within tableau
     console.log("\n--- Move Multiple Cards Test ---");

@@ -103,6 +103,7 @@ export default class GameLogic {
         if (sourcePile.isEmpty())
             return false;
 
+        const card = sourcePile.getHead().data;
         if (this.canMoveToTableau(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.insertAtStart(card);
@@ -128,6 +129,7 @@ export default class GameLogic {
         if (sourcePile.isEmpty())
             return false;
 
+        const card = sourcePile.getHead().data;
         if (this.canMoveToFoundation(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.insertAtStart(card);
@@ -147,6 +149,16 @@ export default class GameLogic {
             this.foundations.spades.size() === 13;
     }
 
+    showTop3CardsFromWaste() {
+        for (let i = 0; i < this.waste.length - 3; i++) {
+            this.waste[i].faceUp = false;
+        }
+        for (let i = Math.max(0, this.waste.length - 3); i < this.waste.length; i++) {
+            this.waste[i].faceUp = true;
+        }
+
+    }
+
     drawFromStock() {   // The last element (waste[waste.length-1]) is the topmost card.
         const drawCount = Math.min(3, this.stock.size()); // handle <3 cards left
         for (let i = 0; i < drawCount; i++) {
@@ -154,7 +166,9 @@ export default class GameLogic {
             card.faceUp = true;
             this.waste.push(card);
         }
+        this.showTop3CardsFromWaste()
     }
+
 
     moveWasteCard(indexFromTop, targetPile, isFoundation) {  // move card from waste pile to tableau or foundation based on isFoundation 
         const cardIndex = this.waste.length - 1 - indexFromTop;
