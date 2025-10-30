@@ -4,6 +4,7 @@ import GameLogic from './game/GameLogic'
 import LinkedList from './dataStructures/LinkedList'
 import Stack from './dataStructures/Stack'
 import Queue from './dataStructures/Queue'
+import Card  from '@heruka_urgyen/react-playing-cards'
 
 function App() {
   const [game] = useState(() => {
@@ -18,7 +19,7 @@ function App() {
     console.log("Stock:", game.stock);
     console.log("Foundation:", game.foundations);
     game.logCardMap();
-    
+
     // Example test 1: Draw from stock
     console.log("\n--- Drawing from stock ---");
     game.drawFromStock();
@@ -41,7 +42,7 @@ function App() {
       console.log("Multi-card move result:", ok);
     }
     console.log("Updated tableau:", game.tableau);
-    
+
     // Example test 3: Print a specific pile
     console.log("\n--- Display first tableau pile ---");
     game.tableau[0].displayList();
@@ -51,7 +52,17 @@ function App() {
 
   return (
     <>
-      <div>Solitaire Console Testing</div>
+      <div>Solitaire Console Testing
+        <div role="img" aria-label="Ace of Hearts">
+          <Card card="As" deckType="basic" height="300px"/>
+          <Card card="Ad" deckType="basic" height="300px"/>
+          <Card card="Ac" deckType="basic" height="300px"/>
+          <Card card="Ah" deckType="basic" height="300px"/>
+        </div>
+
+
+
+      </div>
     </>
   );
 }
