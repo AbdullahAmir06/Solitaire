@@ -153,6 +153,7 @@ export default class LinkedList {
         console.log(out + "NULL");
     }
 
+    // for UI display of cards 
     toArray() {
         const result = [];
         let temp = this.head;

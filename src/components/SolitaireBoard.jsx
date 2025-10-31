@@ -40,7 +40,7 @@ export default function SolitaireBoard({ game }) {
 
   return (
     <div className="text-white p-4">
-      <div className="flex justify-between mb-10 mr-32">
+      <div className="flex justify-between mb-10 mr-36">
         <div className="flex gap-16">
           {/* Stock Pile  */}
           <div id="stock"
@@ -94,10 +94,19 @@ export default function SolitaireBoard({ game }) {
         </div>
 
         <div className="flex gap-6">
-          <div className="w-[100px] h-[140px] bg-gray-500/70 rounded-lg flex items-center justify-center">F1</div>
-          <div className="w-[100px] h-[140px] bg-gray-500/70 rounded-lg flex items-center justify-center">F2</div>
-          <div className="w-[100px] h-[140px] bg-gray-500/70 rounded-lg flex items-center justify-center">F3</div>
-          <div className="w-[100px] h-[140px] bg-gray-500/70 rounded-lg flex items-center justify-center">F4</div>
+          {Object.keys(game.foundations).map((suit, i) => {
+            const pile = game.foundations[suit].toArray(); // convert stack to array
+            const topCard = pile[pile.length - 1]; // top of the stack
+            return (
+              <div key={i} className="w-[100px] h-[140px] bg-gray-500/70 rounded-lg flex items-center justify-center cursor-pointer select-none">
+                {topCard ? (
+                  <Card card={topCard.toString()} deckType="basic" height="140px" />
+                ) : (
+                  <span className="text-gray-400">Empty</span>
+                )}
+              </div>
+            );
+          })}
         </div>
 
       </div>
@@ -123,6 +132,12 @@ export default function SolitaireBoard({ game }) {
                       width: "100px",
                       height: "140px",
                     }}
+
+                    drag
+                    dragConstraints={{ top: 0, left: 0, right: 0, bottom: 0 }} // optional: limits
+                    dragElastic={0.2} // slight "stretchy" effect
+                    onDragEnd={(event, info) => handleDrop(info.point, card, pileIndex)}
+
                   >
                     {card.faceUp ? (
                       <div

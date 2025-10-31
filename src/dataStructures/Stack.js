@@ -45,4 +45,14 @@ export default class Stack {
         return size;
     }
 
+    // for UI display of cards 
+        toArray() {
+        const result = [];
+        let temp = this.head;
+        while (temp) {
+            result.push(temp.data);
+            temp = temp.next;
+        }
+        return result;
+    }
 }

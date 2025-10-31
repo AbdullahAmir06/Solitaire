@@ -32,18 +32,12 @@ function App() {
         <Balatro
           isRotate={false}
           mouseInteraction={false}
-          pixelFilter={700}
+          pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
           <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
             Solitaire Klondike
           </h1>
-          {/* <div className='flex flex-row gap-4'>
-            <Card card="As" deckType="basic" height='130px'></Card>
-            <Card card="Ac" deckType="basic" height='130px'></Card>
-            <Card card="Ah" deckType="basic" height='130px'></Card>
-            <Card card="Ad" deckType="basic" height='130px'></Card>
-          </div> */}
           <SolitaireBoard game={game} />
         </div>
       </div>
