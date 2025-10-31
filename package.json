@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@heruka_urgyen/react-playing-cards": "^0.5.0",
+    "framer-motion": "^12.23.24",
+    "ogl": "^1.0.11",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

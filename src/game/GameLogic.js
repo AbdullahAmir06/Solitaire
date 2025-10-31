@@ -13,7 +13,7 @@ export default class GameLogic {
     createDeck() {
         const suits = ["diamonds", "hearts", "spades", "clubs"]; // all 4 types of cards
         for (const s of suits) {
-            for (let r = 0; r < 13; r++) {
+            for (let r = 1; r <= 13; r++) {
                 this.deck.push(new Card(s, r))  // push is built in function of array in the javascript and in card(s,r) s is suit and r is rank 
             }
         }
@@ -218,13 +218,16 @@ export default class GameLogic {
 
 
 
-    recycleWasteToStock() { // it remove and place it in the FIFO order as in the queue has already
-        this.stock = new Queue();
+    recycleWasteToStock(queue) { // it remove and place it in the FIFO order as in the queue has already
+        this.stock = queue
         while (this.waste.length > 0) {
             const card = this.waste.shift(); // remove from start
             card.faceUp = false;
             this.stock.enqueue(card);
             this.cardMap.set(card, { pile: "stock", faceUp: card.faceUp });
+
+            console.log("Recycling waste:", this.waste.length, "cards -> stock");
+
         }
     }
 

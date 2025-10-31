@@ -153,6 +153,16 @@ export default class LinkedList {
         console.log(out + "NULL");
     }
 
+    toArray() {
+        const result = [];
+        let temp = this.head;
+        while (temp) {
+            result.push(temp.data);
+            temp = temp.next;
+        }
+        return result;
+    }
+
     reverseList() {
         let current = this.head;
         let newHead = null;

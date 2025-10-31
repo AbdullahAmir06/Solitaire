@@ -10,7 +10,7 @@ export default class Card {
     }
 
     toString() {
-        const ranks = { 1: "A", 11: "J", 12: "Q", 13: "K" };
-        return `${ranks[this.rank] || this.rank}${this.suit[0].toUpperCase()}`; // just for debugging
+        const ranks = { 1: "A", 10: "T", 11: "J", 12: "Q", 13: "K" };
+        return `${ranks[this.rank] || this.rank}${this.suit[0].toLowerCase()}`; // just for debugging
     }
 }
