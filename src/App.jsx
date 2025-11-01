@@ -28,14 +28,14 @@ function App() {
 
   return (
     <>
-      <div className="relative w-screen h-screen overflow-hidden">
+      <div className="relative w-screen h-screen overflow-hidden bg-black">
         <Balatro
           isRotate={false}
           mouseInteraction={false}
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
+          <h1 className="text-3xl font-bold  text-center drop-shadow-lg ">
             Solitaire Klondike
           </h1>
           <SolitaireBoard game={game} />
