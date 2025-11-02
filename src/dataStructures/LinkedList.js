@@ -130,17 +130,35 @@ export default class LinkedList {
         return null;
     }
 
-    detachSubList(startNode) {   // it remove the sub list starting at a Node
-        if (this.head === startNode) {
-            this.head = null;
-            return startNode;
+    detachSubList(endNode) {   // it break the sub list from head to end node
+        if (!this.head) return null;
+
+        // if the clicked card (endNode) is the head itself
+        if (this.head === endNode) {
+            const detached = this.head;    // everything from head (just one card)
+            this.head = null;              // tableau becomes empty
+            return detached;               // return that one card
         }
-        let temp = this.head;
-        while (temp.next !== startNode) {
-            temp = temp.next;
+
+        // Otherwise, traverse until the node *just before* endNode
+        let prev = null;
+        let curr = this.head;
+        while (curr && curr !== endNode) {
+            prev = curr;
+            curr = curr.next;
         }
-        temp.next = null;
-        return startNode;
+
+        // If endNode not found
+        if (!curr) return null;
+
+        // 'prev' is the card below the dragged sequence
+        const detachedHead = this.head;  // topmost card (A)
+        prev.next = curr;                // cut link after endNode
+        this.head = curr.next;           // new tableau head (D)
+        curr.next = null;                // detach 'endNode' tail properly
+
+        return detachedHead;             // return the full detached sublist (A→B→C)
+
     }
 
     displayList() {

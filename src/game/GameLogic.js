@@ -1,3 +1,4 @@
+import { tr } from "framer-motion/client";
 import Card from "./Card.js";
 
 export default class GameLogic {
@@ -36,7 +37,7 @@ export default class GameLogic {
                 const card = this.deck[deckIndex++];
                 if (i == j)
                     card.faceUp = true;
-                pile.insertAtEnd(card);
+                pile.insertAtHead(card);
                 this.cardMap.set(card, { pile: `tableau${i+1}`, faceUp: card.faceUp });
             }
             this.tableau.push(pile);
@@ -117,7 +118,7 @@ export default class GameLogic {
         const card = sourcePile.getHead().data;
         if (this.canMoveToTableau(card, targetPile)) {
             sourcePile.deleteFromStart();
-            targetPile.insertAtStart(card);
+            targetPile.insertAtHead(card);
             const index = this.getTableauIndex(targetPile);
             this.cardMap.set(card, { pile: `tableau${index+1}`, faceUp: card.faceUp });
 
@@ -135,7 +136,7 @@ export default class GameLogic {
         if (foundationPile.isEmpty())
             return card.rank === 1; // only ace can start the pile
 
-        const topCard = foundationPile.getHead().data;
+        const topCard = foundationPile.top();
         if (topCard.color === card.color && topCard.rank === card.rank - 1)
             return true;
         return false;
@@ -148,7 +149,7 @@ export default class GameLogic {
         const card = sourcePile.getHead().data;
         if (this.canMoveToFoundation(card, targetPile)) {
             sourcePile.deleteFromStart();
-            targetPile.insertAtStart(card);
+            targetPile.push(card);
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
 
@@ -202,13 +203,13 @@ export default class GameLogic {
         if (isFoundation) {
             if (!this.canMoveToFoundation(card, targetPile)) return false;
             this.waste.splice(cardIndex, 1);
-            targetPile.insertAtStart(card);
+            targetPile.push(card);
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
         } else {
             if (!this.canMoveToTableau(card, targetPile)) return false;
             this.waste.splice(cardIndex, 1);
-            targetPile.insertAtStart(card);
+            targetPile.insertAtHead(card);
             const tIndex = this.getTableauIndex(targetPile);
             this.cardMap.set(card, { pile: `tableau${tIndex+1}`, faceUp: card.faceUp });
         }

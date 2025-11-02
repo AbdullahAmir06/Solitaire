@@ -8,6 +8,7 @@ import Queue from "../dataStructures/Queue";
 import { DndContext } from "@dnd-kit/core";
 import DraggableCard from "./DraggableCard.jsx";
 import DroppablePile from "./DroppablePile.jsx";
+import Confetti from "react-confetti";
 import { tr } from "framer-motion/client";
 
 const game = new GameLogic();
@@ -15,6 +16,9 @@ const game = new GameLogic();
 export default function SolitaireBoard({ game }) {
   const [update, setUpdate] = useState(false);
   const rerender = () => setUpdate(!update);
+  const [draggedCards, setDraggedCards] = useState([]); // it is for the multiple dragging cards effect
+  const [hasWon, setHasWon] = useState(false);
+
 
   if (!game.deck.length) {
     game.initializeGame(LinkedList, Stack, Queue);
@@ -29,20 +33,53 @@ export default function SolitaireBoard({ game }) {
     const from = active.data.current.origin;
     const to = over.id;
 
+    console.log("From pile type:", getPileByOrigin(from));
+    console.log("To pile Tableau:", game.tableau[parseInt(to.replace("tableau-", ""))]);
+    console.log("To pile Foundation:", getFoundationPile(to));
+
+
+    if (from === "waste") {
+      let indexFromTop = game.waste.length - 1 - game.waste.findIndex(c => c === draggedCard);
+      let isFoundation = to.startsWith("foundation") ? true : false;
+      let targetPile = isFoundation ? getFoundationPile(to) : game.tableau[parseInt(to.replace("tableau-", ""))];
+      game.moveWasteCard(indexFromTop, targetPile, isFoundation);
+      game.showTop3CardsFromWaste();
+      rerender();
+      if (game.checkWin()) {
+        setHasWon(true);
+      }
+
+      return;
+    }
+
     // Example logic
     if (to.startsWith("tableau")) {
-      game.moveCardToTableau(
-        getPileByOrigin(from),
-        game.tableau[parseInt(to.replace("tableau-", ""))]
-      );
+      const sourcePile = getPileByOrigin(from);
+      const targetPile = game.tableau[parseInt(to.replace("tableau-", ""))];
+
+      // Determine if moving multiple cards
+      let multipleCards = false;
+      let node = sourcePile.head;
+      let clickedCard = active.data.current.card;
+      while (node && node.data !== clickedCard) {
+        if (node.data.faceUp) multipleCards = true;
+        node = node.next;
+      }
+
+      if (multipleCards) {
+        game.moveMultipleCardWithinTableau(sourcePile, targetPile, clickedCard);
+      } else {
+        game.moveCardToTableau(sourcePile, targetPile);
+      }
+
     } else if (to.startsWith("foundation")) {
-      game.moveCardToFoundation(
-        getPileByOrigin(from),
-        Object.values(game.foundations)[parseInt(to.replace("foundation-", ""))]
-      );
+      game.moveCardToFoundation(getPileByOrigin(from), getFoundationPile(to));
     }
 
     rerender();
+    if (game.checkWin()) {
+      setHasWon(true);
+    }
   };
 
   const getPileByOrigin = (origin) => {
@@ -54,8 +91,48 @@ export default function SolitaireBoard({ game }) {
     return null;
   };
 
+  const getFoundationPile = (id) => {
+    const suitOrder = ["hearts", "diamonds", "clubs", "spades"];
+    const index = parseInt(id.replace("foundation-", ""), 10);
+    const suit = suitOrder[index];
+    return game.foundations[suit];
+  };
+
+  const forceWin = () => {
+    const suits = ["hearts", "diamonds", "clubs", "spades"];
+    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+
+    suits.forEach((suit) => {
+      const foundation = game.foundations[suit];
+      foundation.head = null;
+      // foundation._size = 0;
+
+      ranks.forEach((rank) => {
+        foundation.push({ rank, suit, toString: () => rank + suit[0].toLowerCase() });
+      });
+    });
+
+    if (game.checkWin()) setHasWon(true);
+    rerender();
+  };
+
+
+
   return (<DndContext onDragEnd={handleDragEnd}>
     <div className="text-white p-4">
+
+      {/* //////////////////////////////////////////////////////// */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={forceWin}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold"
+        >
+          Force Win (Test)
+        </button>
+      </div>
+
+      {/* /////////////////////////////////////////////////////// */}
+
       {/* Stock + Waste */}
       <div className="flex justify-between mb-10 mr-36">
         <div className="flex gap-16">
@@ -81,7 +158,7 @@ export default function SolitaireBoard({ game }) {
           {game.waste.length > 0 && (
             <div
               id="waste"
-              className="relative w-[160px] h-[140px] bg-gray-600/70 rounded-lg flex items-center justify-center cursor-grab select-none"
+              className="relative w-[160px] h-[140px] bg-transparent rounded-lg flex items-center justify-center cursor-grab select-none"
             >
               <AnimatePresence>
                 {game.waste.slice(-3).map((card, i) => (
@@ -110,9 +187,9 @@ export default function SolitaireBoard({ game }) {
 
         {/* Foundations */}
         <div className="flex gap-6">
-          {Object.keys(game.foundations).map((suit, i) => {
+          {Object.keys(game.foundations).map((suit, i) => { // it means my foundation-0 --> hearts and foundation-1 --> diamonds and foundation-2 --> clubs  and foundation-3 --> spades 
             const pile = game.foundations[suit].toArray();
-            const topCard = pile[pile.length - 1];
+            const topCard = pile[0];
             return (
               <DroppablePile key={i} id={`foundation-${i}`}>
                 <div className="w-[100px] h-[140px] flex items-center justify-center">
@@ -132,40 +209,46 @@ export default function SolitaireBoard({ game }) {
       {/* Tableau */}
       <div className="flex justify-center gap-6">
         {game.tableau.map((pile, i) => (
-          <DroppablePile key={i} id={`tableau-${i}`}>
-            {pile.toArray().map((card, j) => (
-              <div
+          <DroppablePile key={i} id={`tableau-${i}`} pile={pile.toArray()}>
+            {pile.toArray().reverse().map((card, j) => (
+              <motion.div
                 key={j}
-                className="absolute"
-                style={{ top: `${j * 25}px` }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.2, delay: j * 0.09 }}
+                style={{ position: "absolute", top: `${j * 25}px`, left: 0 }}
               >
-                {/* <div style={{ perspective: "1000px" }}> */}
-                {/* <motion.div
-                    key={j}
-                    initial={{ rotateY: 180 }}
-                    animate={{ rotateY: card.faceUp ? 0 : 180 }}
-                    transition={{ duration: 0.6, ease: "easeInOut" }}
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    style={{
-                      transformStyle: "preserve-3d",
-                      position: "relative",
-                      width: "100px",
-                      height: "140px",
-                    }}
-                  > */}
                 <DraggableCard
                   id={`tableau-${i}-${j}`}
                   card={card}
                   origin={`tableau-${i}`}
+                  disabled={!card.faceUp} // disables drag for face-down cards
                 />
-                {/* </motion.div> */}
-                {/* </div> */}
-              </div>
+              </motion.div>
             ))}
           </DroppablePile>
+
         ))}
       </div>
     </div>
+    {hasWon && (
+      <>
+        <Confetti friction={1} gravity={0.1} />
+        <motion.div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
+          <motion.div
+            className="bg-stone-800 text-white px-10 py-6 rounded-2xl text-3xl font-bold shadow-xl"
+            initial={{ scale: 0.5 }}
+            animate={{ scale: 1.1 }}
+            transition={{ type: "spring", stiffness: 120 }}
+          >
+            🎉 Congratulations! You Won! 🎉
+          </motion.div>
+        </motion.div>
+      </>
+    )}
+
+
   </DndContext>
   )
 }

@@ -1,14 +1,17 @@
-// src/components/DraggableCard.jsx
 import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import Card from "@heruka_urgyen/react-playing-cards";
 
 export default function DraggableCard({ card, origin }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } =
-    useDraggable({
-      id: `${origin}-${card.toString()}`,
-      data: { card, origin },
-    });
+  // Only make draggable if card is face up
+  const draggableProps = card.faceUp
+    ? useDraggable({
+        id: `${origin}-${card.toString()}`,
+        data: { card, origin },
+      })
+    : {};
+
+  const { attributes, listeners, setNodeRef, transform, isDragging } = draggableProps;
 
   const style = {
     transform: transform
@@ -16,6 +19,7 @@ export default function DraggableCard({ card, origin }) {
       : undefined,
     zIndex: isDragging ? 9999 : "auto",
     position: "relative",
+    cursor: card.faceUp ? "grab" : "default", // optional visual cue
   };
 
   return (

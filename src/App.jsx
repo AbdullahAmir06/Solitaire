@@ -35,7 +35,7 @@ function App() {
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <h1 className="text-3xl font-bold  text-center drop-shadow-lg ">
+          <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
             Solitaire Klondike
           </h1>
           <SolitaireBoard game={game} />

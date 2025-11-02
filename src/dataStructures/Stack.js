@@ -9,24 +9,31 @@ export default class Stack {
         this.List.insertAtHead(x);
     }
 
-    pop(x) {
+    pop() {
         if (this.isEmpty()) {
             console.warn("Underflow...cannot remove more")
             return null;
         }
-        this.List.deleteFromStart()
-        return true;
+        const topNode = this.List.top();
+        if(topNode===null)
+            return null
+        this.List.deleteFromStart();
+        return topValue;
     }
 
     isEmpty() {
         return this.List.isEmpty();
     }
 
-    top() {     // return the top element of stack
+    top() {     // return the value of top element of stack
         if (this.isEmpty()) {
             return null;
         }
         return this.List.getHead().data;
+    }
+
+    getHead() {  // it is used to get the head node of stack
+        return this.List.getHead();
     }
 
     display() {
@@ -46,13 +53,7 @@ export default class Stack {
     }
 
     // for UI display of cards 
-        toArray() {
-        const result = [];
-        let temp = this.head;
-        while (temp) {
-            result.push(temp.data);
-            temp = temp.next;
-        }
-        return result;
+    toArray() {
+        return this.List.toArray();
     }
 }
