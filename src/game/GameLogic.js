@@ -38,7 +38,7 @@ export default class GameLogic {
                 if (i == j)
                     card.faceUp = true;
                 pile.insertAtHead(card);
-                this.cardMap.set(card, { pile: `tableau${i+1}`, faceUp: card.faceUp });
+                this.cardMap.set(card, { pile: `tableau${i + 1}`, faceUp: card.faceUp });
             }
             this.tableau.push(pile);
         }
@@ -103,7 +103,7 @@ export default class GameLogic {
         const tIndex = this.getTableauIndex(targetPile);
         let node = detachedSequence;
         while (node) {
-            this.cardMap.set(node.data, { pile: `tableau${tIndex+1}`, faceUp: node.data.faceUp });
+            this.cardMap.set(node.data, { pile: `tableau${tIndex + 1}`, faceUp: node.data.faceUp });
             node = node.next;
         }
         return true;
@@ -120,12 +120,12 @@ export default class GameLogic {
             sourcePile.deleteFromStart();
             targetPile.insertAtHead(card);
             const index = this.getTableauIndex(targetPile);
-            this.cardMap.set(card, { pile: `tableau${index+1}`, faceUp: card.faceUp });
+            this.cardMap.set(card, { pile: `tableau${index + 1}`, faceUp: card.faceUp });
 
             if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
                 const srcIndex = this.getTableauIndex(sourcePile);
-                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex+1}`, faceUp: true });
+                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex + 1}`, faceUp: true });
             }
             return true;
         }
@@ -137,7 +137,7 @@ export default class GameLogic {
             return card.rank === 1; // only ace can start the pile
 
         const topCard = foundationPile.top();
-        if (topCard.color === card.color && topCard.rank === card.rank - 1)
+        if (topCard.color === card.color && topCard.rank === card.rank - 1 && card.suit === topCard.suit)
             return true;
         return false;
     }
@@ -156,7 +156,7 @@ export default class GameLogic {
             if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
                 const srcIndex = this.getTableauIndex(sourcePile);
-                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex+1}`, faceUp: true });
+                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex + 1}`, faceUp: true });
             }
             return true;
         }
@@ -211,7 +211,7 @@ export default class GameLogic {
             this.waste.splice(cardIndex, 1);
             targetPile.insertAtHead(card);
             const tIndex = this.getTableauIndex(targetPile);
-            this.cardMap.set(card, { pile: `tableau${tIndex+1}`, faceUp: card.faceUp });
+            this.cardMap.set(card, { pile: `tableau${tIndex + 1}`, faceUp: card.faceUp });
         }
 
         return true;
@@ -254,7 +254,7 @@ export default class GameLogic {
 
 
 
-    
+
 
 
 

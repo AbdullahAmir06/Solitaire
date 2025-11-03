@@ -98,23 +98,23 @@ export default function SolitaireBoard({ game }) {
     return game.foundations[suit];
   };
 
-  const forceWin = () => {
-    const suits = ["hearts", "diamonds", "clubs", "spades"];
-    const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+  // const forceWin = () => {
+  //   const suits = ["hearts", "diamonds", "clubs", "spades"];
+  //   const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-    suits.forEach((suit) => {
-      const foundation = game.foundations[suit];
-      foundation.head = null;
-      // foundation._size = 0;
+  //   suits.forEach((suit) => {
+  //     const foundation = game.foundations[suit];
+  //     foundation.head = null;
+  //     // foundation._size = 0;
 
-      ranks.forEach((rank) => {
-        foundation.push({ rank, suit, toString: () => rank + suit[0].toLowerCase() });
-      });
-    });
+  //     ranks.forEach((rank) => {
+  //       foundation.push({ rank, suit, toString: () => rank + suit[0].toLowerCase() });
+  //     });
+  //   });
 
-    if (game.checkWin()) setHasWon(true);
-    rerender();
-  };
+  //   if (game.checkWin()) setHasWon(true);
+  //   rerender();
+  // };
 
 
 
@@ -122,14 +122,14 @@ export default function SolitaireBoard({ game }) {
     <div className="text-white p-4">
 
       {/* //////////////////////////////////////////////////////// */}
-      <div className="flex justify-center mb-4">
+      {/* <div className="flex justify-center mb-4">
         <button
           onClick={forceWin}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold"
         >
           Force Win (Test)
         </button>
-      </div>
+      </div> */}
 
       {/* /////////////////////////////////////////////////////// */}
 
@@ -210,23 +210,42 @@ export default function SolitaireBoard({ game }) {
       <div className="flex justify-center gap-6">
         {game.tableau.map((pile, i) => (
           <DroppablePile key={i} id={`tableau-${i}`} pile={pile.toArray()}>
-            {pile.toArray().reverse().map((card, j) => (
-              <motion.div
-                key={j}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.2, delay: j * 0.09 }}
-                style={{ position: "absolute", top: `${j * 25}px`, left: 0 }}
-              >
-                <DraggableCard
-                  id={`tableau-${i}-${j}`}
-                  card={card}
-                  origin={`tableau-${i}`}
-                  disabled={!card.faceUp} // disables drag for face-down cards
-                />
-              </motion.div>
-            ))}
+            {(() => {
+              const pileArray = pile.toArray().reverse();
+              const maxPileHeight = 350; // available visual space (adjust based on layout)
+              const cardHeight = 140;
+              const baseSpacing = 25;
+              const totalHeight = cardHeight + (pileArray.length - 1) * baseSpacing;
+
+              // if totalHeight exceeds available space, compress spacing
+              const spacing =
+                totalHeight > maxPileHeight
+                  ? (maxPileHeight - cardHeight) / (pileArray.length - 1)
+                  : baseSpacing;
+
+              return pileArray.map((card, j) => (
+                <motion.div
+                  key={j}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2, delay: j * 0.05 }}
+                  style={{
+                    position: "absolute",
+                    top: `${j * spacing}px`,
+                    left: 0,
+                  }}
+                >
+                  <DraggableCard
+                    id={`tableau-${i}-${j}`}
+                    card={card}
+                    origin={`tableau-${i}`}
+                    disabled={!card.faceUp}
+                  />
+                </motion.div>
+              ));
+            })()}
+
           </DroppablePile>
 
         ))}
