@@ -38,6 +38,14 @@ export default function SolitaireBoard({ game }) {
     console.log("To pile Foundation:", getFoundationPile(to));
 
 
+    if (from.startsWith("foundation") && to.startsWith("tableau")) {
+      const sourcePile = getFoundationPile(from);
+      const targetPile = game.tableau[parseInt(to.replace("tableau-", ""))];
+      game.FromFoundationCardToTableau(sourcePile, targetPile);
+      rerender();
+      return;
+    }
+
     if (from === "waste") {
       let indexFromTop = game.waste.length - 1 - game.waste.findIndex(c => c === draggedCard);
       let isFoundation = to.startsWith("foundation") ? true : false;
@@ -62,7 +70,8 @@ export default function SolitaireBoard({ game }) {
       let node = sourcePile.head;
       let clickedCard = active.data.current.card;
       while (node && node.data !== clickedCard) {
-        if (node.data.faceUp) multipleCards = true;
+        if (node.data.faceUp)
+          multipleCards = true;
         node = node.next;
       }
 
@@ -194,7 +203,12 @@ export default function SolitaireBoard({ game }) {
               <DroppablePile key={i} id={`foundation-${i}`}>
                 <div className="w-[100px] h-[140px] flex items-center justify-center">
                   {topCard ? (
-                    <Card card={topCard.toString()} deckType="basic" height="140px" />
+                    // <Card card={topCard.toString()} deckType="basic" height="140px" />
+                    <DraggableCard
+                      id={`foundation-${i}-top`}
+                      card={topCard}
+                      origin={`foundation-${i}`}
+                    />
                   ) : (
                     <span className="text-gray-400">Empty</span>
                   )}
@@ -240,7 +254,7 @@ export default function SolitaireBoard({ game }) {
                     id={`tableau-${i}-${j}`}
                     card={card}
                     origin={`tableau-${i}`}
-                    disabled={!card.faceUp}
+                  // disabled={!card.faceUp}  // disable the card with face down
                   />
                 </motion.div>
               ));

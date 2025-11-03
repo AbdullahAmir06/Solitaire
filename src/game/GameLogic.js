@@ -111,6 +111,26 @@ export default class GameLogic {
 
     }
 
+    FromFoundationCardToTableau(sourcePile, targetPile) {
+        if (sourcePile.isEmpty())
+            return false;
+
+        const card = sourcePile.getHead().data;
+        if (this.canMoveToTableau(card, targetPile)) {
+            sourcePile.pop();
+            targetPile.insertAtHead(card);
+            const index = this.getTableauIndex(targetPile);
+            this.cardMap.set(card, { pile: `tableau${index + 1}`, faceUp: card.faceUp });
+
+            if (!sourcePile.isEmpty()) {
+                sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
+                const srcIndex = this.getTableauIndex(sourcePile);
+                this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex + 1}`, faceUp: true });
+            }
+            return true;
+        }
+        return false;
+    }
     moveCardToTableau(sourcePile, targetPile) {
         if (sourcePile.isEmpty())
             return false;
@@ -150,6 +170,7 @@ export default class GameLogic {
         if (this.canMoveToFoundation(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.push(card);
+            
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
 

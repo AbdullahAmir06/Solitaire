@@ -14,11 +14,11 @@ export default class Stack {
             console.warn("Underflow...cannot remove more")
             return null;
         }
-        const topNode = this.List.top();
+        const topNode = this.getHead();
         if(topNode===null)
             return null
         this.List.deleteFromStart();
-        return topValue;
+        return topNode.data;
     }
 
     isEmpty() {
