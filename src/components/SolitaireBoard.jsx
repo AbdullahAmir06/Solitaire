@@ -10,6 +10,7 @@ import DraggableCard from "./DraggableCard.jsx";
 import DroppablePile from "./DroppablePile.jsx";
 import Confetti from "react-confetti";
 import { tr } from "framer-motion/client";
+import { RefreshCw, Layers } from "lucide-react";
 
 const game = new GameLogic();
 
@@ -159,7 +160,8 @@ export default function SolitaireBoard({ game }) {
             {game.stock.size() > 0 ? (
               <Card card="back" deckType="basic" height="140px" back />
             ) : (
-              <div className="text-sm text-gray-400">REDEAL</div>
+              <div className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
+                <RefreshCw size={40} /> REDEAL</div>
             )}
           </div>
 
@@ -210,7 +212,8 @@ export default function SolitaireBoard({ game }) {
                       origin={`foundation-${i}`}
                     />
                   ) : (
-                    <span className="text-gray-400">Empty</span>
+                    <span className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
+                      <Layers size={30} /></span>
                   )}
                 </div>
               </DroppablePile>

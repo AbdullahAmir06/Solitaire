@@ -6,7 +6,7 @@ import Stack from './dataStructures/Stack'
 import Queue from './dataStructures/Queue'
 import Card from '@heruka_urgyen/react-playing-cards'
 import SolitaireBoard from './components/SolitaireBoard'
-
+import Header from './components/Header.jsx'
 import Balatro from './components/Balatro/Balatro.jsx';;
 
 
@@ -35,10 +35,13 @@ function App() {
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
+          <Header />
+          {/* <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
             Solitaire Klondike
-          </h1>
-          <SolitaireBoard game={game} />
+          </h1> */}
+          <div className="mt-8">
+            <SolitaireBoard game={game} />
+          </div>
         </div>
       </div>
 
