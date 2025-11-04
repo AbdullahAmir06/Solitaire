@@ -1,4 +1,4 @@
-import React, { useState, useRef, act } from "react";
+import React, { useState, useRef, act, useImperativeHandle, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "@heruka_urgyen/react-playing-cards";
 import GameLogic from './../game/GameLogic.js';
@@ -14,11 +14,58 @@ import { RefreshCw, Layers } from "lucide-react";
 
 const game = new GameLogic();
 
-export default function SolitaireBoard({ game }) {
+
+// Forward ref so parent can call showHint()
+const SolitaireBoard = forwardRef(({ game }, ref) => {
   const [update, setUpdate] = useState(false);
   const rerender = () => setUpdate(!update);
-  const [draggedCards, setDraggedCards] = useState([]); // it is for the multiple dragging cards effect
   const [hasWon, setHasWon] = useState(false);
+  const [hintResult, setHintResult] = useState(null); // card to move
+  const [highlightedTopCard, setHighlightedTopCard] = useState(null); // top card of target pile
+  const [stockHighlight, setStockHighlight] = useState(false); // highlight the stock pile
+
+  // Expose showHint to parent via ref
+  useImperativeHandle(ref, () => ({
+    showHint: () => {
+      const hint = game.hint(); // returns { card, fromPile, toPile }
+
+      if (hint) {
+        if (hint.fromPile.type === "waste" && !hint.card.faceUp) {
+          setStockHighlight(true);     // highlight stock instead
+        } else {
+          setHintResult(hint.card);    // highlight the waste card or other cards
+        }
+
+
+
+        // Determine top card of the target pile
+        let toCard = null;
+        if (hint.toPile.type === "foundation") {
+          const pileArray = game.foundations[hint.toPile.suit].toArray();
+          toCard = pileArray[0]; // top card of foundation
+        } else if (hint.toPile.type === "tableau") {
+          const pileArray = game.tableau[hint.toPile.index].toArray();
+          toCard = pileArray[0]; // top card of tableau
+        }
+
+        setHighlightedTopCard(toCard);
+      } else {
+        // No moves possible → highlight stock pile
+        setHintResult(null);
+        setHighlightedTopCard(null);
+        setStockHighlight(true);
+      }
+
+      // Remove highlights after 2 seconds
+      setTimeout(() => {
+        setHintResult(null);
+        setHighlightedTopCard(null);
+        setStockHighlight(false);
+      }, 2000);
+    }
+  }));
+
+
 
 
   if (!game.deck.length) {
@@ -155,15 +202,22 @@ export default function SolitaireBoard({ game }) {
               else game.drawFromStock();
               rerender();
             }}
-            className="w-[100px] h-[140px] bg-gray-700/70 rounded-lg flex items-center justify-center cursor-pointer select-none"
+            className="w-[100px] h-[140px] rounded-lg flex items-center justify-center cursor-pointer select-none transition-shadow duration-300 bg-gray-700/70"
+            style={{
+              boxShadow: stockHighlight
+                ? "0 0 15px 5px rgba(255, 255, 0, 0.8)" // yellow glow
+                : "none"
+            }}
           >
             {game.stock.size() > 0 ? (
               <Card card="back" deckType="basic" height="140px" back />
             ) : (
               <div className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
-                <RefreshCw size={40} /> REDEAL</div>
+                <RefreshCw size={40} /> REDEAL
+              </div>
             )}
           </div>
+
 
           {/* Waste Pile */}
           {game.waste.length > 0 && (
@@ -187,6 +241,7 @@ export default function SolitaireBoard({ game }) {
                       id={`waste-${i}`}
                       card={card}
                       origin="waste"
+                      highlight={(hintResult && hintResult.rank === card.rank && hintResult.suit === card.suit) || (highlightedTopCard && highlightedTopCard.rank === card.rank && highlightedTopCard.suit === card.suit)}
                     />
                   </motion.div>
                 ))}
@@ -202,7 +257,7 @@ export default function SolitaireBoard({ game }) {
             const pile = game.foundations[suit].toArray();
             const topCard = pile[0];
             return (
-              <DroppablePile key={i} id={`foundation-${i}`}>
+              <DroppablePile key={i} id={`foundation-${i}`} >
                 <div className="w-[100px] h-[140px] flex items-center justify-center">
                   {topCard ? (
                     // <Card card={topCard.toString()} deckType="basic" height="140px" />
@@ -210,6 +265,9 @@ export default function SolitaireBoard({ game }) {
                       id={`foundation-${i}-top`}
                       card={topCard}
                       origin={`foundation-${i}`}
+                      highlight={(hintResult && hintResult.rank === topCard.rank && hintResult.suit === topCard.suit) || (highlightedTopCard && highlightedTopCard.rank === topCard.rank && highlightedTopCard.suit === topCard.suit)
+                      }
+
                     />
                   ) : (
                     <span className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
@@ -257,6 +315,11 @@ export default function SolitaireBoard({ game }) {
                     id={`tableau-${i}-${j}`}
                     card={card}
                     origin={`tableau-${i}`}
+                    highlight={
+                      (hintResult && hintResult.rank === card.rank && hintResult.suit === card.suit) ||
+                      (highlightedTopCard && highlightedTopCard.rank === card.rank && highlightedTopCard.suit === card.suit)
+                    }
+
                   // disabled={!card.faceUp}  // disable the card with face down
                   />
                 </motion.div>
@@ -286,5 +349,7 @@ export default function SolitaireBoard({ game }) {
 
 
   </DndContext>
-  )
-}
+  );
+});
+
+export default SolitaireBoard;

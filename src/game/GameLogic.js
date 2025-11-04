@@ -1,4 +1,4 @@
-import { tr } from "framer-motion/client";
+import { object, tr } from "framer-motion/client";
 import Card from "./Card.js";
 
 export default class GameLogic {
@@ -170,7 +170,7 @@ export default class GameLogic {
         if (this.canMoveToFoundation(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.push(card);
-            
+
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
 
@@ -274,9 +274,117 @@ export default class GameLogic {
     }
 
 
+    hint() {
+        // waste to foundation
+        for (let i = this.waste.length - 1; i >= 0; i--) {
+            const wasteCard = this.waste[i];
+
+            for (const key of Object.keys(this.foundations)) {
+                const foundation = this.foundations[key];
+                const topCard = foundation.top();
+                // to card rank  == from card rank -1
+                if ((topCard === null && wasteCard.rank == 1) || (topCard !== null && topCard.rank === wasteCard.rank - 1 && topCard.suit === wasteCard.suit)) {
+                    return {
+                        card: wasteCard,
+                        fromPile: { type: "waste", index: i },
+                        toPile: { type: "foundation", suit: key }
+                    };
+                }
+            }
+        }
 
 
+        // waste to tableau
+        for (let i = this.waste.length - 1; i >= 0; i--) {
+            const wasteCard = this.waste[i];
+
+            if (!wasteCard.faceUp)
+                continue;
+
+            for (let j = 0; j < 7; j++) {
+                const tableauPile = this.tableau[j];
+                const topNode = tableauPile.getHead();
+                const topCard = topNode ? topNode.data : null;
+
+                // to card rank  == from card rank + 1
+                if ((topCard === null && wasteCard.rank == 13) || (topCard !== null && topCard.rank === wasteCard.rank + 1 && topCard.color !== wasteCard.color)) {
+                    return {
+                        card: wasteCard,
+                        fromPile: { type: "waste", index: i },
+                        toPile: { type: "tableau", index: j }
+                    };
+                }
+            }
+        }
+
+        // tableau to foundation
+        for (let i = 0; i < 7; i++) {
+            const tableauPile = this.tableau[i];
+            const tableauNode = tableauPile.getHead();
+
+            if (!tableauNode || !tableauNode.data.faceUp) continue;
+            const tableauCard = tableauNode.data;
+
+            for (const key of Object.keys(this.foundations)) {
+                const foundation = this.foundations[key];
+                const foundationTopCard = foundation.top();
+
+                if ((foundationTopCard === null && tableauCard.rank === 1) || (foundationTopCard && foundationTopCard.rank === tableauCard.rank - 1 && foundationTopCard.suit === tableauCard.suit)) {
+                    return {
+                        card: tableauCard,
+                        fromPile: { type: "tableau", index: i },
+                        toPile: { type: "foundation", suit: key }
+                    };
+                }
+            }
+
+        }
+
+        // tableau to tableau
+        for (let i = 0; i < 7; i++) {
+            const fromTableauPile = this.tableau[i];
+            const fromNode = fromTableauPile.getHead(); // get top node
+            if (!fromNode || !fromNode.data.faceUp) continue; // skip empty or face-down
+
+            const fromCard = fromNode.data;
+
+            for (let j = 0; j < 7; j++) {
+                if (j === i) continue; // skip same pile
+
+                const toTableauPile = this.tableau[j];
+                const toNode = toTableauPile.getHead();
+                const toCard = toNode ? toNode.data : null;
+
+                // If empty pile, only kings can move
+                if (!toCard && fromCard.rank === 13) {
+                    return {
+                        card: fromCard,
+                        fromPile: { type: "tableau", index: i },
+                        toPile: { type: "tableau", index: j }
+                    };
+                }
+
+                // to card rank  == from card rank + 1
+                // If non-empty pile, must be alternating color and descending rank
+                if (toCard &&
+                    fromCard.color !== toCard.color &&
+                    toCard.rank === fromCard.rank + 1
+                ) {
 
 
+                    const fromParent = fromNode.next ? fromNode.next.data : null;
+                    if (fromParent && fromParent.rank === toCard.rank && fromParent.faceUp)
+                        continue;
+
+                    return {
+                        card: fromCard,
+                        fromPile: { type: "tableau", index: i },
+                        toPile: { type: "tableau", index: j }
+                    };
+                }
+            }
+        }
+        return null;
+    }
 
 }

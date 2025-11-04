@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useRef } from 'react'
 import './App.css'
 import GameLogic from './game/GameLogic'
 import LinkedList from './dataStructures/LinkedList'
@@ -19,6 +19,8 @@ function App() {
 
   const themeKeys = Object.keys(balatroThemes);
   const [themeIndex, setThemeIndex] = useState(0);
+  const boardRef = useRef(); // create a ref
+
 
   const currentTheme = balatroThemes[themeKeys[themeIndex]];
 
@@ -47,12 +49,12 @@ function App() {
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <Header onThemeChange={handleThemeChange} />
+          <Header onThemeChange={handleThemeChange} onHint={() => boardRef.current.showHint()} />
           {/* <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
             Solitaire Klondike
           </h1> */}
           <div className="mt-8">
-            <SolitaireBoard game={game} />
+            <SolitaireBoard game={game} ref={boardRef} />
           </div>
         </div>
       </div>

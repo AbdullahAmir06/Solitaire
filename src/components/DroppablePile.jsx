@@ -17,20 +17,20 @@ export default function DroppablePile({ id, children, pile = [] }) {
             : baseSpacing;
 
     // Dynamic height of the droppable zone
-    const pileHeight =
-        pile.length > 0
-            ? cardHeight + (pile.length - 1) * spacing
-            : cardHeight;
+    const pileHeight = pile.length > 0
+        ? cardHeight + (pile.length - 1) * spacing
+        : cardHeight;
 
-    // console.log("height of ",{pile}," is ",pile.length > 0 ? 140 + (pile.length - 1) * 25 : 140);
+    const bgColor = isOver ? "bg-green-600/40" : "bg-gray-600/40";
+
+
     return (
         <div
             ref={setNodeRef}
-            className={`relative w-[100px] rounded-lg transition-colors ${isOver ? "bg-green-600/40" : "bg-gray-600/40"
-                }`}
+            className={`relative w-[100px] rounded-lg transition-all duration-300 ${bgColor}`}
             style={{
+                height: pileHeight
                 // height: pile.length > 0 ? 140 + (pile.length - 1) * 25 : 140,
-                height: pileHeight,
             }}
         >
             {children}

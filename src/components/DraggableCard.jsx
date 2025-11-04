@@ -2,13 +2,13 @@ import React from "react";
 import { useDraggable } from "@dnd-kit/core";
 import Card from "@heruka_urgyen/react-playing-cards";
 
-export default function DraggableCard({ card, origin }) {
+export default function DraggableCard({ card, origin, highlight }) {
   // Only make draggable if card is face up
   const draggableProps = card.faceUp
     ? useDraggable({
-        id: `${origin}-${card.toString()}`,
-        data: { card, origin },
-      })
+      id: `${origin}-${card.toString()}`,
+      data: { card, origin },
+    })
     : {};
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = draggableProps;
@@ -20,6 +20,12 @@ export default function DraggableCard({ card, origin }) {
     zIndex: isDragging ? 9999 : "auto",
     position: "relative",
     cursor: card.faceUp ? "grab" : "default", // optional visual cue
+
+    transition: "box-shadow 0.3s ease, transform 0.2s ease",
+    boxShadow: highlight
+      ? "0 0 15px 5px rgba(255, 255, 0, 0.8)" // yellow glow for hint
+      : "none",
+    borderRadius: "8px",
   };
 
   return (
