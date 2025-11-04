@@ -1,4 +1,4 @@
-import { useState, useEffect,useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import './App.css'
 import GameLogic from './game/GameLogic'
 import LinkedList from './dataStructures/LinkedList'
@@ -11,11 +11,36 @@ import Balatro from './components/Balatro/Balatro.jsx';
 import { balatroThemes } from './components/Balatro/BalatroPreset.jsx'
 
 function App() {
-  const [game] = useState(() => {
-    const g = new GameLogic();
+
+  const [resetTimerSignal, setResetTimerSignal] = useState(0); // for resetting timer upon new game
+
+  //--------------- Score Chart --------------- 
+  // to Foundation +10
+  // within tableau movement +5
+  // flip facedown card +5
+  // draw from stock -1
+  // use hint -5 
+
+  const [score, setScore] = useState(0); // for game score
+  function handleScore(change) {
+    setScore(prev => prev + change);
+  }
+  const [game, setGame] = useState(() => { // for game state
+
+
+    const g = new GameLogic(handleScore);
     g.initializeGame(LinkedList, Stack, Queue);
     return g;
   });
+
+  const newGame = () => {    // when button is pressed .... new game state
+    const g = new GameLogic(handleScore);
+    g.initializeGame(LinkedList, Stack, Queue);
+    setGame(g);
+
+    setScore(0);
+    setResetTimerSignal(s => s + 1); // it will notify the header
+  };
 
   const themeKeys = Object.keys(balatroThemes);
   const [themeIndex, setThemeIndex] = useState(0);
@@ -28,14 +53,14 @@ function App() {
     setThemeIndex((prev) => (prev + 1) % themeKeys.length);
   };
 
-  useEffect(() => {
-    console.log("=== Initial Game State ===");
-    console.log("Tableau:", game.tableau);
-    console.log("Stock:", game.stock);
-    console.log("Foundation:", game.foundations);
-    game.logCardMap();
+  // useEffect(() => {
+  //   console.log("=== Initial Game State ===");
+  //   console.log("Tableau:", game.tableau);
+  //   console.log("Stock:", game.stock);
+  //   console.log("Foundation:", game.foundations);
+  //   game.logCardMap();
 
-  }, [game]);
+  // }, [game]);
 
   return (
     <>
@@ -49,7 +74,7 @@ function App() {
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <Header onThemeChange={handleThemeChange} onHint={() => boardRef.current.showHint()} />
+          <Header onThemeChange={handleThemeChange} onNewGame={newGame} resetTimerSignal={resetTimerSignal} score={score} onHint={() => boardRef.current.showHint()} />
           {/* <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
             Solitaire Klondike
           </h1> */}

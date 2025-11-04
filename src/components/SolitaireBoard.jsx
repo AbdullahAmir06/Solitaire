@@ -12,7 +12,7 @@ import Confetti from "react-confetti";
 import { tr } from "framer-motion/client";
 import { RefreshCw, Layers } from "lucide-react";
 
-const game = new GameLogic();
+// const game = new GameLogic();
 
 
 // Forward ref so parent can call showHint()

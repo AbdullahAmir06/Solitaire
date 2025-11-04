@@ -1,13 +1,20 @@
 import { useState, useEffect } from "react";
 import { Undo2, Redo2, Lightbulb, RefreshCw, Palette } from "lucide-react";
 
-export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChange }) {
+export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChange, resetTimerSignal,score }) {
     const [time, setTime] = useState(0);
-
+    // let score = 0;
     useEffect(() => {
         const interval = setInterval(() => setTime(t => t + 1), 1000);
         return () => clearInterval(interval);
     }, []);
+
+
+    // reset timer when resetTimerSignal changes
+    useEffect(() => {
+        setTime(0);
+    }, [resetTimerSignal]);
+
 
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
@@ -19,8 +26,8 @@ export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChang
         <header
             className="
         fixed top-0 left-0 w-full z-50
-        flex items-center justify-between
-        px-6 py-3 
+        flex items-center justify-center
+        px-6 py-3  
         backdrop-blur-md
         bg-black/40 text-white
         shadow-md rounded-b-2xl
@@ -28,9 +35,11 @@ export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChang
       "
         >
             {/* Left: Game Title */}
-            <h1 className="text-2xl font-bold tracking-wide drop-shadow-lg">
-                ♠ Solitaire
-            </h1>
+            <div className="absolute left-6 flex items-center">
+                <h1 className="text-2xl font-bold tracking-wide drop-shadow-lg">
+                    ♠ Solitaire
+                </h1>
+            </div>
 
             {/* Middle: Controls */}
             <div className="flex items-center gap-3">
@@ -61,8 +70,9 @@ export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChang
             </div>
 
             {/* Right: Timer + Theme Button */}
-            <div className="flex items-center gap-4">
+            <div className="absolute right-6 flex items-center gap-4">
                 <span className="font-mono text-lg drop-shadow-md">{formatTime(time)}</span>
+                <span className="font-mono text-lg drop-shadow-md">Score: {score}</span>
                 <button
                     onClick={onThemeChange}
                     className="p-2 bg-white/20 hover:bg-white/10 rounded-lg shadow-sm transition"
@@ -70,6 +80,7 @@ export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChang
                     <Palette size={18} />
                 </button>
             </div>
+
         </header>
     );
 }

@@ -2,13 +2,17 @@ import { object, tr } from "framer-motion/client";
 import Card from "./Card.js";
 
 export default class GameLogic {
-    constructor() {
+    constructor(onScoreChange) {
         this.cardMap = new Map();
         this.deck = [];
         this.tableau = []; // it will contain 7 piles (list)
         this.foundations = {}; // 4 suits (stack)
         this.stock = null; // queue
         this.waste = null;
+
+        this.onScoreChange = onScoreChange;
+
+
     }
 
     createDeck() {
@@ -97,8 +101,13 @@ export default class GameLogic {
 
         targetPile.insertSubListAtHead(detachedSequence);
 
-        if (sourcePile.head)
+        if (this.onScoreChange) this.onScoreChange(5);
+
+        if (sourcePile.head) {
             sourcePile.head.data.faceUp = true;
+            if (this.onScoreChange) this.onScoreChange(5);
+        }
+
 
         const tIndex = this.getTableauIndex(targetPile);
         let node = detachedSequence;
@@ -139,11 +148,16 @@ export default class GameLogic {
         if (this.canMoveToTableau(card, targetPile)) {
             sourcePile.deleteFromStart();
             targetPile.insertAtHead(card);
+
+            if (this.onScoreChange) this.onScoreChange(5);
+
             const index = this.getTableauIndex(targetPile);
             this.cardMap.set(card, { pile: `tableau${index + 1}`, faceUp: card.faceUp });
 
             if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
+                if (this.onScoreChange) this.onScoreChange(5);
+
                 const srcIndex = this.getTableauIndex(sourcePile);
                 this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex + 1}`, faceUp: true });
             }
@@ -171,11 +185,17 @@ export default class GameLogic {
             sourcePile.deleteFromStart();
             targetPile.push(card);
 
+            if (this.onScoreChange)
+                this.onScoreChange(10);
+
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
 
             if (!sourcePile.isEmpty()) {
                 sourcePile.getHead().data.faceUp = true;    // linkedlist --> node --> (.data) card.js --> faceUp 
+
+                if (this.onScoreChange) this.onScoreChange(5);
+
                 const srcIndex = this.getTableauIndex(sourcePile);
                 this.cardMap.set(sourcePile.getHead().data, { pile: `tableau${srcIndex + 1}`, faceUp: true });
             }
@@ -212,6 +232,8 @@ export default class GameLogic {
             this.waste.push(card);
             this.cardMap.set(card, { pile: "waste", faceUp: card.faceUp });
         }
+
+        if (this.onScoreChange) this.onScoreChange(-1);
         this.showTop3CardsFromWaste()
     }
 
@@ -225,12 +247,18 @@ export default class GameLogic {
             if (!this.canMoveToFoundation(card, targetPile)) return false;
             this.waste.splice(cardIndex, 1);
             targetPile.push(card);
+
+            if (this.onScoreChange) this.onScoreChange(10);
+
             const key = this.getFoundationKeyByPile(targetPile);
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
         } else {
             if (!this.canMoveToTableau(card, targetPile)) return false;
             this.waste.splice(cardIndex, 1);
             targetPile.insertAtHead(card);
+
+            if (this.onScoreChange) this.onScoreChange(5);
+
             const tIndex = this.getTableauIndex(targetPile);
             this.cardMap.set(card, { pile: `tableau${tIndex + 1}`, faceUp: card.faceUp });
         }
@@ -279,11 +307,15 @@ export default class GameLogic {
         for (let i = this.waste.length - 1; i >= 0; i--) {
             const wasteCard = this.waste[i];
 
+            if (!wasteCard.faceUp)
+                continue;
+
             for (const key of Object.keys(this.foundations)) {
                 const foundation = this.foundations[key];
                 const topCard = foundation.top();
                 // to card rank  == from card rank -1
                 if ((topCard === null && wasteCard.rank == 1) || (topCard !== null && topCard.rank === wasteCard.rank - 1 && topCard.suit === wasteCard.suit)) {
+                    if (this.onScoreChange) this.onScoreChange(-5);
                     return {
                         card: wasteCard,
                         fromPile: { type: "waste", index: i },
@@ -308,6 +340,7 @@ export default class GameLogic {
 
                 // to card rank  == from card rank + 1
                 if ((topCard === null && wasteCard.rank == 13) || (topCard !== null && topCard.rank === wasteCard.rank + 1 && topCard.color !== wasteCard.color)) {
+                    if (this.onScoreChange) this.onScoreChange(-5);
                     return {
                         card: wasteCard,
                         fromPile: { type: "waste", index: i },
@@ -330,6 +363,7 @@ export default class GameLogic {
                 const foundationTopCard = foundation.top();
 
                 if ((foundationTopCard === null && tableauCard.rank === 1) || (foundationTopCard && foundationTopCard.rank === tableauCard.rank - 1 && foundationTopCard.suit === tableauCard.suit)) {
+                    if (this.onScoreChange) this.onScoreChange(-5);
                     return {
                         card: tableauCard,
                         fromPile: { type: "tableau", index: i },
@@ -357,6 +391,9 @@ export default class GameLogic {
 
                 // If empty pile, only kings can move
                 if (!toCard && fromCard.rank === 13) {
+
+                    if (this.onScoreChange) this.onScoreChange(-5);
+
                     return {
                         card: fromCard,
                         fromPile: { type: "tableau", index: i },
@@ -375,6 +412,8 @@ export default class GameLogic {
                     const fromParent = fromNode.next ? fromNode.next.data : null;
                     if (fromParent && fromParent.rank === toCard.rank && fromParent.faceUp)
                         continue;
+
+                    if (this.onScoreChange) this.onScoreChange(-5);
 
                     return {
                         card: fromCard,
