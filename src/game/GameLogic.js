@@ -90,6 +90,9 @@ export default class GameLogic {
 
     undo() {
         if (this.undoStack.size() === 0) return;
+
+        if (this.onScoreChange) this.onScoreChange(-2);
+
         this.redoStack.push(this.snapshotGame());  // save current for redo
         const prevState = this.undoStack.pop();
         this.restoreState(prevState);

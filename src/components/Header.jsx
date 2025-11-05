@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Undo2, Redo2, Lightbulb, RefreshCw, Palette } from "lucide-react";
 
-export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChange, resetTimerSignal,score }) {
+export default function Header({ onNewGame, onUndo, onRedo, canUndo, canRedo, onHint, onThemeChange, resetTimerSignal, score }) {
     const [time, setTime] = useState(0);
     // let score = 0;
     useEffect(() => {
@@ -51,12 +51,14 @@ export default function Header({ onNewGame, onUndo, onRedo, onHint, onThemeChang
                 </button>
                 <button
                     onClick={onUndo}
+                    disabled={!canUndo}
                     className="p-2 bg-white/20 hover:bg-white/10 rounded-lg shadow-sm transition"
                 >
                     <Undo2 size={18} />
                 </button>
                 <button
                     onClick={onRedo}
+                    disabled={!canRedo}
                     className="p-2 bg-white/20 hover:bg-white/10 rounded-lg shadow-sm transition"
                 >
                     <Redo2 size={18} />
