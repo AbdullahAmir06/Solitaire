@@ -43,4 +43,10 @@ export default class Queue {
         }
         return size;
     }
+
+    clone() {
+        const newQueue = new Queue();
+        newQueue.list = this.list.clone();
+        return newQueue;
+    }
 }

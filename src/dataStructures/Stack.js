@@ -15,7 +15,7 @@ export default class Stack {
             return null;
         }
         const topNode = this.getHead();
-        if(topNode===null)
+        if (topNode === null)
             return null
         this.List.deleteFromStart();
         return topNode.data;
@@ -55,5 +55,12 @@ export default class Stack {
     // for UI display of cards 
     toArray() {
         return this.List.toArray();
+    }
+
+
+    clone() {
+        const newStack = new Stack();
+        newStack.List = this.List.clone();
+        return newStack;
     }
 }

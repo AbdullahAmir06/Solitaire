@@ -1,5 +1,7 @@
 import { object, tr } from "framer-motion/client";
 import Card from "./Card.js";
+import Stack from "../dataStructures/Stack.js"; // for undo redo
+import { space } from "postcss/lib/list";
 
 export default class GameLogic {
     constructor(onScoreChange) {
@@ -9,6 +11,9 @@ export default class GameLogic {
         this.foundations = {}; // 4 suits (stack)
         this.stock = null; // queue
         this.waste = null;
+
+        this.undoStack = new Stack()
+        this.redoStack = new Stack()
 
         this.onScoreChange = onScoreChange;
 
@@ -68,6 +73,51 @@ export default class GameLogic {
         };
     }
 
+
+    snapshotGame() {
+        return {
+            tableau: this.tableau.map(pile => pile.clone()),
+            foundations: {
+                hearts: this.foundations.hearts.clone(),
+                diamonds: this.foundations.diamonds.clone(),
+                clubs: this.foundations.clubs.clone(),
+                spades: this.foundations.spades.clone(),
+            },
+            stock: this.stock.clone(),
+            waste: this.waste.map(card => card.clone()),
+        };
+    }
+
+    undo() {
+        if (this.undoStack.size() === 0) return;
+        this.redoStack.push(this.snapshotGame());  // save current for redo
+        const prevState = this.undoStack.pop();
+        this.restoreState(prevState);
+    }
+
+    redo() {
+        if (this.redoStack.size() === 0) return;
+        this.undoStack.push(this.snapshotGame());  // save current for undo
+        const nextState = this.redoStack.pop();
+        this.restoreState(nextState);
+    }
+
+    restoreState(state) {
+        this.tableau = state.tableau.map(pile => pile.clone());
+        this.foundations = {
+            hearts: state.foundations.hearts.clone(),
+            diamonds: state.foundations.diamonds.clone(),
+            clubs: state.foundations.clubs.clone(),
+            spades: state.foundations.spades.clone(),
+        };
+        this.stock = state.stock.clone();
+        this.waste = state.waste.map(card => card.clone());
+    }
+
+
+
+
+
     /**
      * Check if a card can move to a tableau pile
      * @param {Card} card - The card being moved
@@ -96,6 +146,9 @@ export default class GameLogic {
 
         if (!this.canMoveToTableau(startSequence.data, targetPile))
             return false;
+
+        this.undoStack.push(this.snapshotGame());
+        this.redoStack = new Stack();  // clear redo
 
         const detachedSequence = sourcePile.detachSubList(startSequence);
 
@@ -126,6 +179,10 @@ export default class GameLogic {
 
         const card = sourcePile.getHead().data;
         if (this.canMoveToTableau(card, targetPile)) {
+
+            this.undoStack.push(this.snapshotGame());
+            this.redoStack = new Stack();  // clear redo
+
             sourcePile.pop();
             targetPile.insertAtHead(card);
             const index = this.getTableauIndex(targetPile);
@@ -146,6 +203,11 @@ export default class GameLogic {
 
         const card = sourcePile.getHead().data;
         if (this.canMoveToTableau(card, targetPile)) {
+
+
+            this.undoStack.push(this.snapshotGame());
+            this.redoStack = new Stack();  // clear redo
+
             sourcePile.deleteFromStart();
             targetPile.insertAtHead(card);
 
@@ -182,6 +244,10 @@ export default class GameLogic {
 
         const card = sourcePile.getHead().data;
         if (this.canMoveToFoundation(card, targetPile)) {
+
+            this.undoStack.push(this.snapshotGame());
+            this.redoStack = new Stack();  // clear redo
+
             sourcePile.deleteFromStart();
             targetPile.push(card);
 
@@ -225,6 +291,8 @@ export default class GameLogic {
     }
 
     drawFromStock() {   // The last element (waste[waste.length-1]) is the topmost card.
+        this.undoStack.push(this.snapshotGame());
+        this.redoStack = new Stack();  // clear redo
         const drawCount = Math.min(3, this.stock.size()); // handle <3 cards left
         for (let i = 0; i < drawCount; i++) {
             const card = this.stock.dequeue();
@@ -245,6 +313,10 @@ export default class GameLogic {
 
         if (isFoundation) {
             if (!this.canMoveToFoundation(card, targetPile)) return false;
+
+            this.undoStack.push(this.snapshotGame());
+            this.redoStack = new Stack();  // clear redo
+
             this.waste.splice(cardIndex, 1);
             targetPile.push(card);
 
@@ -254,6 +326,10 @@ export default class GameLogic {
             this.cardMap.set(card, { pile: `foundation-${key}`, faceUp: card.faceUp });
         } else {
             if (!this.canMoveToTableau(card, targetPile)) return false;
+
+            this.undoStack.push(this.snapshotGame());
+            this.redoStack = new Stack();  // clear redo
+
             this.waste.splice(cardIndex, 1);
             targetPile.insertAtHead(card);
 
@@ -269,6 +345,10 @@ export default class GameLogic {
 
 
     recycleWasteToStock(queue) { // it remove and place it in the FIFO order as in the queue has already
+
+        this.undoStack.push(this.snapshotGame());
+        this.redoStack = new Stack();  // clear redo
+
         this.stock = queue
         while (this.waste.length > 0) {
             const card = this.waste.shift(); // remove from start

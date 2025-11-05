@@ -13,7 +13,7 @@ import { balatroThemes } from './components/Balatro/BalatroPreset.jsx'
 function App() {
 
   const [resetTimerSignal, setResetTimerSignal] = useState(0); // for resetting timer upon new game
-
+  const [renderVersion, setRenderVersion] = useState(0); // counter just for undo redo rendering 
   //--------------- Score Chart --------------- 
   // to Foundation +10
   // within tableau movement +5
@@ -40,7 +40,19 @@ function App() {
 
     setScore(0);
     setResetTimerSignal(s => s + 1); // it will notify the header
+    setRenderVersion(v => v + 1);
   };
+
+  const handleUndo = () => {
+    game.undo();
+    setRenderVersion(v => v + 1); // trigger re-render
+  };
+
+  const handleRedo = () => {
+    game.redo();
+    setRenderVersion(v => v + 1); // trigger re-render
+  };
+
 
   const themeKeys = Object.keys(balatroThemes);
   const [themeIndex, setThemeIndex] = useState(0);
@@ -66,7 +78,7 @@ function App() {
           pixelFilter={2000}
         />
         <div className="absolute inset-0  text-white p-6">
-          <Header onThemeChange={handleThemeChange} onNewGame={newGame} resetTimerSignal={resetTimerSignal} score={score} onHint={() => boardRef.current.showHint()} />
+          <Header onThemeChange={handleThemeChange} onNewGame={newGame} resetTimerSignal={resetTimerSignal} score={score} onUndo={handleUndo} onRedo={handleRedo} onHint={() => boardRef.current.showHint()} />
 
           <div className="mt-8">
             <SolitaireBoard game={game} ref={boardRef} />

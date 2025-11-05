@@ -239,4 +239,22 @@ export default class LinkedList {
         return list1;
     }
 
+    clone() {
+        const newList = new LinkedList();
+        let node = this.head;
+        let prevNewNode = null;
+
+        while (node) {
+            const newNode = new Node(node.data.clone()); // it will clone card
+            if (!newList.head)
+                newList.head = newNode;
+            if (prevNewNode)
+                prevNewNode.next = newNode;
+            prevNewNode = newNode;
+            node = node.next;
+        }
+
+        return newList;
+    }
+
 }

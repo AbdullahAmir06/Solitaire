@@ -13,4 +13,10 @@ export default class Card {
         const ranks = { 1: "A", 10: "T", 11: "J", 12: "Q", 13: "K" };
         return `${ranks[this.rank] || this.rank}${this.suit[0].toLowerCase()}`; // just for debugging
     }
+
+    clone() {
+        const c = new Card(this.suit, this.rank);
+        c.faceUp = this.faceUp;
+        return c;
+    }
 }
