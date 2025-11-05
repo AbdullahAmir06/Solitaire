@@ -11,7 +11,7 @@ import Balatro from './components/Balatro/Balatro.jsx';
 import { balatroThemes } from './components/Balatro/BalatroPreset.jsx'
 
 function App() {
-
+ 
   const [resetTimerSignal, setResetTimerSignal] = useState(0); // for resetting timer upon new game
   const [renderVersion, setRenderVersion] = useState(0); // counter just for undo redo rendering 
   //--------------- Score Chart --------------- 
