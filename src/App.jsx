@@ -53,14 +53,6 @@ function App() {
     setThemeIndex((prev) => (prev + 1) % themeKeys.length);
   };
 
-  // useEffect(() => {
-  //   console.log("=== Initial Game State ===");
-  //   console.log("Tableau:", game.tableau);
-  //   console.log("Stock:", game.stock);
-  //   console.log("Foundation:", game.foundations);
-  //   game.logCardMap();
-
-  // }, [game]);
 
   return (
     <>
@@ -75,9 +67,7 @@ function App() {
         />
         <div className="absolute inset-0  text-white p-6">
           <Header onThemeChange={handleThemeChange} onNewGame={newGame} resetTimerSignal={resetTimerSignal} score={score} onHint={() => boardRef.current.showHint()} />
-          {/* <h1 className="text-3xl font-bold  text-center drop-shadow-lg">
-            Solitaire Klondike
-          </h1> */}
+
           <div className="mt-8">
             <SolitaireBoard game={game} ref={boardRef} />
           </div>

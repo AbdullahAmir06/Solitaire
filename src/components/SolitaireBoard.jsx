@@ -257,7 +257,7 @@ const SolitaireBoard = forwardRef(({ game }, ref) => {
             const pile = game.foundations[suit].toArray();
             const topCard = pile[0];
             return (
-              <DroppablePile key={i} id={`foundation-${i}`} >
+              <DroppablePile key={`foundation-${i}`} id={`foundation-${i}`} >
                 <div className="w-[100px] h-[140px] flex items-center justify-center">
                   {topCard ? (
                     // <Card card={topCard.toString()} deckType="basic" height="140px" />
@@ -284,7 +284,7 @@ const SolitaireBoard = forwardRef(({ game }, ref) => {
       {/* Tableau */}
       <div className="flex justify-center gap-6">
         {game.tableau.map((pile, i) => (
-          <DroppablePile key={i} id={`tableau-${i}`} pile={pile.toArray()}>
+          <DroppablePile key={`tableau-${i}`} id={`tableau-${i}`} pile={pile.toArray()}>
             {(() => {
               const pileArray = pile.toArray().reverse();
               const maxPileHeight = 350; // available visual space (adjust based on layout)
@@ -300,7 +300,7 @@ const SolitaireBoard = forwardRef(({ game }, ref) => {
 
               return pileArray.map((card, j) => (
                 <motion.div
-                  key={j}
+                  key={`tableau-${i}-${j}`}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.8 }}
