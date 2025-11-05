@@ -61,6 +61,7 @@ function App() {
   const themeKeys = Object.keys(balatroThemes);
   const [themeIndex, setThemeIndex] = useState(0);
   const boardRef = useRef(); // create a ref
+  const isLightTheme = themeKeys[themeIndex] === "ocean" || themeKeys[themeIndex] === "classic" ; // for congrat text black 
 
 
   const currentTheme = balatroThemes[themeKeys[themeIndex]];
@@ -94,7 +95,7 @@ function App() {
             onHint={() => boardRef.current.showHint()} />
 
           <div className="mt-8">
-            <SolitaireBoard game={game} ref={boardRef} />
+            <SolitaireBoard game={game} ref={boardRef} popupColor={currentTheme} lightTheme={isLightTheme} />
           </div>
         </div>
       </div>

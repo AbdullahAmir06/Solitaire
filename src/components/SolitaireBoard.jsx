@@ -16,13 +16,14 @@ import { RefreshCw, Layers } from "lucide-react";
 
 
 // Forward ref so parent can call showHint()
-const SolitaireBoard = forwardRef(({ game }, ref) => {
+const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
   const [update, setUpdate] = useState(false);
   const rerender = () => setUpdate(!update);
   const [hasWon, setHasWon] = useState(false);
   const [hintResult, setHintResult] = useState(null); // card to move
   const [highlightedTopCard, setHighlightedTopCard] = useState(null); // top card of target pile
   const [stockHighlight, setStockHighlight] = useState(false); // highlight the stock pile
+  const { color1, color2, color3 } = popupColor;
 
   // Expose showHint to parent via ref
   useImperativeHandle(ref, () => ({
@@ -173,7 +174,9 @@ const SolitaireBoard = forwardRef(({ game }, ref) => {
   //   rerender();
   // };
 
-
+  // if (typeof window !== "undefined") {
+  //   window.forceWin = forceWin;
+  // }
 
   return (<DndContext onDragEnd={handleDragEnd}>
     <div className="text-white p-4">
@@ -336,7 +339,16 @@ const SolitaireBoard = forwardRef(({ game }, ref) => {
         <Confetti friction={1} gravity={0.1} />
         <motion.div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
           <motion.div
-            className="bg-stone-800 text-white px-10 py-6 rounded-2xl text-3xl font-bold shadow-xl"
+            style={{
+              background: `
+              linear-gradient(
+                135deg,
+                ${color1},
+                ${color2},
+                ${color3})`,
+              color: lightTheme ? "black" : "white",
+            }}
+            className="px-10 py-6 rounded-2xl text-3xl font-bold shadow-xl"
             initial={{ scale: 0.5 }}
             animate={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 120 }}
