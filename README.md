@@ -133,11 +133,25 @@ Highlights a valid next move when the player is stuck
 
 ### 📸 Screenshots 
 
-![Gameplay](./screenshots/gameplay.png)
+<p>
+  <b>Gameplay</b><br>
+  <img src="./screenshots/gameplay.png" width="500"/>
+</p>
 
-![Win Screen](./screenshots/win.png)
-![Hint Detection](./screenshots/hint.png)
-![Drag and Drop](./screenshots/drag.png)
+<p>
+  <b>Win Screen</b><br>
+  <img src="./screenshots/win.png" width="500"/>
+</p>
+
+<p>
+  <b>Hint Detection</b><br>
+  <img src="./screenshots/hint.png" width="500"/>
+</p>
+
+<p>
+  <b>Drag & Drop</b><br>
+  <img src="./screenshots/drag.png" width="500"/>
+</p>
 
 ### Testing
 
