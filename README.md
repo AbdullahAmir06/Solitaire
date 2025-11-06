@@ -1,87 +1,97 @@
-📘 Solitaire (Turn-Three) – DSA Project
+# 📘 Solitaire (Turn-Three) – DSA Project
 
-A modern implementation of Klondike Solitaire (Turn-Three) built using React, featuring custom data structure implementations (Linked List, Stack, Queue), smooth animations, undo-redo support, hints, and a responsive UI.
+A modern implementation of **Klondike Solitaire (Turn-Three)** built using **React**, featuring custom data structure implementations (Linked List, Stack, Queue), smooth animations, undo-redo support, hints, and a responsive UI.
 
-Developed as part of the CSC200 – Data Structures & Algorithms mid-term project.
+ Developed as part of the **CSC200 – Data Structures & Algorithms** mid-term project.
 
-✅ Features
+---
 
-✔ Turn-Three solitaire gameplay
-✔ Access to any of the top three waste cards
-✔ Move multiple cards within tableau
-✔ Custom data structures
- • Linked List — Tableau
- • Stack — Foundation & Undo/Redo
- • Queue — Stock
-✔ Undo / Redo functionality
-✔ Hint system
-✔ Timer
-✔ Smooth animations & effects
-✔ Light / Dark / Bold themes
-✔ Full win detection & victory celebration
+### Features
 
-🧠 Data Structures Used
-Component	Structure	Reason
-Tableau	Linked List	Efficient multi-card movement
-Foundation	Stack	Only top card access
-Stock	Queue	Draw FIFO order
-Waste	Array	Access any top 3 cards
-Undo / Redo	Stack	State traversal
-🚀 Live Demo
+- ✔ Turn-Three solitaire gameplay  
+- ✔ Access to **any of the top three waste cards**  
+- ✔ Move multiple cards within tableau  
+- ✔ Custom data structures  
+  - Linked List — Tableau  
+  - Stack — Foundation & Undo/Redo  
+  - Queue — Stock  
+- ✔ Undo / Redo functionality  
+- ✔ Hint system  
+- ✔ Timer  
+- ✔ Smooth animations & effects  
+- ✔ Light / Dark / Bold themes  
+- ✔ Full win detection & celebration  
 
-🔗 Play here: [Launch Game](https://solitairegame.vercel.app/)
 
-🛠️ Tech Stack
 
-React
+### 🧠 Data Structures Used
 
-Vite
+| Component   | Structure   | Reason                       |
+|-------------|-------------|------------------------------|
+| Tableau     | Linked List | Efficient multi-card movement |
+| Foundation  | Stack       | Only top card access         |
+| Stock       | Queue       | Draw FIFO order              |
+| Waste       | Array       | Access any top 3 cards       |
+| Undo/Redo   | Stack       | State traversal              |
 
-Tailwind CSS
+---
 
-Framer Motion
+### 🚀 Live Demo
+🔗 **Play here:**  
+https://solitairegame.vercel.app/
 
-Lucide React
+---
 
-@heruka_urgyen/react-playing-cards
+### 🛠 Tech Stack
 
-NPM
+- React  
+- Vite  
+- Tailwind CSS  
+- Framer Motion  
+- Lucide React  
+- @heruka_urgyen/react-playing-cards  
+- NPM  
+- Custom DSA structures: Linked List, Stack, Queue  
 
-Custom DSA structures (Linked List, Stack, Queue)
+---
 
-📁 Project Structure
+### 📁 Project Structure
+
 src/
- ├── components/
- │    ├── Balatro/
- │    ├── DraggableCard.jsx
- │    ├── DroppablePile.jsx
- │    ├── Header.jsx
- │    └── SolitaireBoard.jsx
- ├── dataStructures/
- │    ├── LinkedList.js
- │    ├── Stack.js
- │    └── Queue.js
- ├── game/
- │    ├── GameLogic.js
- │    └── Card.js/
- ├── main.jsx
- ├── index.css
- └── App.jsx
+├── components/
+│ ├── Balatro/
+│ ├── DraggableCard.jsx
+│ ├── DroppablePile.jsx
+│ ├── Header.jsx
+│ └── SolitaireBoard.jsx
+├── dataStructures/
+│ ├── LinkedList.js
+│ ├── Stack.js
+│ └── Queue.js
+├── game/
+│ ├── GameLogic.js
+│ └── Card.js
+├── main.jsx
+├── index.css
+└── App.jsx
 
-⚙️ Installation & Setup
-🔹 Requirements
 
-Node.js v16+
+---
 
-NPM v8+
+### ⚙️ Installation & Setup
 
-Note: Due to peer dependency conflicts, this project uses
-legacy-peer-deps=true
-(handled via .npmrc)
+#### ✅ Requirements
+- Node.js **v16+**
+- NPM **v8+**
 
-🔹 Steps
+ Due to peer dependency conflicts, this project uses:  
+ `legacy-peer-deps=true` (already configured via `.npmrc`)
+
+#### ✅ Steps
+
+```bash
 # Clone repository
-git clone [Repository Link](https://gitlab.com/aa727dar/csc200m24pid156.git)
+git clone https://gitlab.com/aa727dar/csc200m24pid156.git
 
 # Navigate
 cd CSC200M24PID156
@@ -92,89 +102,87 @@ npm install
 # Start dev server
 npm run dev
 
+Open in browser 👉 http://localhost:5173
 
-Open 👉 http://localhost:5173
+```
 
-🎮 How to Play
+### 🎮 How to Play
 
-Tableau piles: Arrange alternating color & descending rank
+- Tableau piles → Arrange alternating colors & descending rank
 
-Foundation: Build A → K (same suit)
+- Foundation → Build A → K (same suit)
 
-Stock: Draw 3 cards to waste
+- Stock → Draw 3 cards to waste
 
-Waste: You may choose any of top 3 cards
+- Waste → You may choose any of the top 3 cards
 
-Move sequences within tableau allowed
+- Move sequences within tableau allowed
 
-Win when all cards reach foundation
+- Win when all cards reach foundation
 
-♻️ Undo / Redo
+### ♻️ Undo / Redo
 
-Game state stored after valid moves
+Game state stored after every valid move
 
-Undo → Restore from undo stack
+- Undo → Restore previous state
 
-Redo → Restore from redo stack
+- Redo → Re-apply undone state
 
-💡 Hint System
+### 💡 Hint System
 
-Highlights a valid next move when the player is stuck.
+Highlights a valid next move when the player is stuck
 
-📸 Screenshots
+### 📸 Screenshots 
 
 ![Gameplay](./screenshots/gameplay.png)
+
 ![Win Screen](./screenshots/win.png)
 ![Hint Detection](./screenshots/hint.png)
 ![Drag and Drop](./screenshots/drag.png)
 
-✅ Testing
+### Testing
 
-Move validation
+- Move validation
+- Tableau ↔ Foundation rules
+- Waste top-3 selection
+- Undo / Redo state recovery
+- Win detection
+- Hint suggestions
+- Stock recycling
 
-Tableau ↔ Foundation rules
+### 🏁 Results
 
-Waste top-3 selection
+- Fully playable
 
-Undo/Redo correctness
+- Valid rules enforced
 
-Win detection
+- Undo / redo functional
 
-Hint suggestions
+- Hint system available
 
-Stock recycle behavior
+- Smooth user experience
 
-🏁 Results
+### 🔮 Future Improvements
 
-✔ Fully playable
-✔ Valid rules enforced
-✔ Undo / redo functional
-✔ Hint system in place
-✔ Smooth user experience
+- Auto-solve
 
-🔮 Future Improvements
+- Mobile support
 
-Auto-complete / auto-solve
+- Save game
 
-Scoring system
+- Advanced hint logic
 
-Sound effects
-
-Mobile support
-
-Persistent storage (save game)
-
-Additional hint levels
-
-📚 References
+### 📚 References
 
 https://solitaired.com
- – Gameplay reference
+ — gameplay reference
 
-@heruka_urgyen/react-playing-cards
+https://www.npmjs.com/package/@heruka_urgyen/react-playing-cards 
 
-👤 Author
+### 👤 Author
 
 Name: Abdullah Amir
+
 Course: CSC200 – Data Structures & Algorithms
+
 Instructor: Nazeef-ul-Haq
