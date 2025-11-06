@@ -19,7 +19,8 @@ function App() {
   // within tableau movement +5
   // flip facedown card +5
   // draw from stock -1
-  // use hint -5 
+  // use hint -5
+  // use undo -2 
 
   const [score, setScore] = useState(0); // for game score
 
