@@ -56,6 +56,8 @@ https://solitairegame.vercel.app/
 ---
 
 ### 📁 Project Structure
+```bash
+
 
 src/
 ├── components/
@@ -75,8 +77,7 @@ src/
 ├── index.css
 └── App.jsx
 
-
----
+```
 
 ### ⚙️ Installation & Setup
 
@@ -103,9 +104,7 @@ npm install
 npm run dev
 
 Open in browser 👉 http://localhost:5173
-
 ```
-
 ### 🎮 How to Play
 
 - Tableau piles → Arrange alternating colors & descending rank
@@ -143,11 +142,17 @@ Highlights a valid next move when the player is stuck
 ### Testing
 
 - Move validation
+
 - Tableau ↔ Foundation rules
+
 - Waste top-3 selection
+
 - Undo / Redo state recovery
+
 - Win detection
+
 - Hint suggestions
+
 - Stock recycling
 
 ### 🏁 Results
