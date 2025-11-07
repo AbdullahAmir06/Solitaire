@@ -239,6 +239,7 @@ export default class LinkedList {
         return list1;
     }
 
+    // ---------- Cloning game to save state for undo/redo ----------
     clone() {
         const newList = new LinkedList();
         let node = this.head;

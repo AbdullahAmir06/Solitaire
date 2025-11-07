@@ -5,10 +5,12 @@ export default class Queue {
         this.list = new LinkedList();
     }
 
+    // ---------- Insert at end ----------
     enqueue(x) {
         this.list.insertAtEnd(x);
     }
 
+    // ---------- Delete at start ----------
     dequeue() {
         if (this.list.isEmpty())
             return null;
@@ -44,6 +46,8 @@ export default class Queue {
         return size;
     }
 
+
+    // ---------- Cloning Game state ----------
     clone() {
         const newQueue = new Queue();
         newQueue.list = this.list.clone();

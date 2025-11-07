@@ -12,18 +12,16 @@ import Confetti from "react-confetti";
 import { tr } from "framer-motion/client";
 import { RefreshCw, Layers } from "lucide-react";
 
-// const game = new GameLogic();
-
 
 // Forward ref so parent can call showHint()
 const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
   const [update, setUpdate] = useState(false);
-  const rerender = () => setUpdate(!update);
-  const [hasWon, setHasWon] = useState(false);
+  const rerender = () => setUpdate(!update); // to trigger UI update
+  const [hasWon, setHasWon] = useState(false); // to trigger Congrats Window
   const [hintResult, setHintResult] = useState(null); // card to move
   const [highlightedTopCard, setHighlightedTopCard] = useState(null); // top card of target pile
   const [stockHighlight, setStockHighlight] = useState(false); // highlight the stock pile
-  const { color1, color2, color3 } = popupColor;
+  const { color1, color2, color3 } = popupColor; // for Congrats UI text color 
 
   // Expose showHint to parent via ref
   useImperativeHandle(ref, () => ({
@@ -67,26 +65,24 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
   }));
 
 
-
-
   if (!game.deck.length) {
     game.initializeGame(LinkedList, Stack, Queue);
   }
 
-
+  // function to handle the drag i.e where the card will be dropped so we can find the target pile
   const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over) return;
 
-    const draggedCard = active.data.current.card;
-    const from = active.data.current.origin;
-    const to = over.id;
+    const draggedCard = active.data.current.card; // the card being dragged
+    const from = active.data.current.origin; // source pile of card
+    const to = over.id; // where the card is dropped
 
     console.log("From pile type:", getPileByOrigin(from));
     console.log("To pile Tableau:", game.tableau[parseInt(to.replace("tableau-", ""))]);
     console.log("To pile Foundation:", getFoundationPile(to));
 
-
+    // Case 1: If card dropped from foundation to Tableau
     if (from.startsWith("foundation") && to.startsWith("tableau")) {
       const sourcePile = getFoundationPile(from);
       const targetPile = game.tableau[parseInt(to.replace("tableau-", ""))];
@@ -95,6 +91,7 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
       return;
     }
 
+    // Case 2: If card is dragged from waste pile to foundation or tableau
     if (from === "waste") {
       let indexFromTop = game.waste.length - 1 - game.waste.findIndex(c => c === draggedCard);
       let isFoundation = to.startsWith("foundation") ? true : false;
@@ -109,7 +106,7 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
       return;
     }
 
-    // Example logic
+    // Case 3: If card is dropped to tableau
     if (to.startsWith("tableau")) {
       const sourcePile = getPileByOrigin(from);
       const targetPile = game.tableau[parseInt(to.replace("tableau-", ""))];
@@ -156,42 +153,10 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
     return game.foundations[suit];
   };
 
-  // const forceWin = () => {
-  //   const suits = ["hearts", "diamonds", "clubs", "spades"];
-  //   const ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
-  //   suits.forEach((suit) => {
-  //     const foundation = game.foundations[suit];
-  //     foundation.head = null;
-  //     // foundation._size = 0;
-
-  //     ranks.forEach((rank) => {
-  //       foundation.push({ rank, suit, toString: () => rank + suit[0].toLowerCase() });
-  //     });
-  //   });
-
-  //   if (game.checkWin()) setHasWon(true);
-  //   rerender();
-  // };
-
-  // if (typeof window !== "undefined") {
-  //   window.forceWin = forceWin;
-  // }
 
   return (<DndContext onDragEnd={handleDragEnd}>
     <div className="text-white p-4">
-
-      {/* //////////////////////////////////////////////////////// */}
-      {/* <div className="flex justify-center mb-4">
-        <button
-          onClick={forceWin}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold"
-        >
-          Force Win (Test)
-        </button>
-      </div> */}
-
-      {/* /////////////////////////////////////////////////////// */}
 
       {/* Stock + Waste */}
       <div className="flex justify-between mb-10 mr-36">

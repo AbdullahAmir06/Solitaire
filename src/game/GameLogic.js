@@ -12,10 +12,10 @@ export default class GameLogic {
         this.stock = null; // queue
         this.waste = null;
 
-        this.undoStack = new Stack()
-        this.redoStack = new Stack()
+        this.undoStack = new Stack() // to undo game
+        this.redoStack = new Stack() // to redo game
 
-        this.onScoreChange = onScoreChange;
+        this.onScoreChange = onScoreChange; // update UI score based on cards movements
 
 
     }
@@ -29,6 +29,7 @@ export default class GameLogic {
         }
     }
 
+    // shuffling all cards with equal probability
     shuffleDeck() {
         for (let i = this.deck.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -143,18 +144,23 @@ export default class GameLogic {
         if (sourcePile.isEmpty())
             return false;
 
+        // find the clicked card
         const startSequence = sourcePile.findNodeByCard(clickedCard);
         if (!startSequence || !startSequence.data.faceUp)
             return false;
 
+        // check condition
         if (!this.canMoveToTableau(startSequence.data, targetPile))
             return false;
 
+        // save game
         this.undoStack.push(this.snapshotGame());
         this.redoStack = new Stack();  // clear redo
 
+        //  break the linkedlist
         const detachedSequence = sourcePile.detachSubList(startSequence);
 
+        // attach cards to target pile
         targetPile.insertSubListAtHead(detachedSequence);
 
         if (this.onScoreChange) this.onScoreChange(5);
@@ -200,6 +206,7 @@ export default class GameLogic {
         }
         return false;
     }
+
     moveCardToTableau(sourcePile, targetPile) {
         if (sourcePile.isEmpty())
             return false;
@@ -308,7 +315,6 @@ export default class GameLogic {
         this.showTop3CardsFromWaste()
     }
 
-
     moveWasteCard(indexFromTop, targetPile, isFoundation) {  // move card from waste pile to tableau or foundation based on isFoundation 
         const cardIndex = this.waste.length - 1 - indexFromTop;
         const card = this.waste[cardIndex];
@@ -344,8 +350,6 @@ export default class GameLogic {
 
         return true;
     }
-
-
 
     recycleWasteToStock(queue) { // it remove and place it in the FIFO order as in the queue has already
 

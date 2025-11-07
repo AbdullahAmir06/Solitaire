@@ -14,6 +14,7 @@ function App() {
 
   const [resetTimerSignal, setResetTimerSignal] = useState(0); // for resetting timer upon new game
   const [renderVersion, setRenderVersion] = useState(0); // counter just for undo redo rendering 
+
   //--------------- Score Chart --------------- 
   // to Foundation +10
   // within tableau movement +5
@@ -55,12 +56,12 @@ function App() {
     setRenderVersion(v => v + 1); // trigger re-render
   };
 
-  const canUndo = game.undoStack.size() > 0;
-  const canRedo = game.redoStack.size() > 0;
+  const canUndo = game.undoStack.size() > 0; // check to disable undo button in the header
+  const canRedo = game.redoStack.size() > 0; // check to disable redo button in the header
 
 
   const themeKeys = Object.keys(balatroThemes);
-  const [themeIndex, setThemeIndex] = useState(0);
+  const [themeIndex, setThemeIndex] = useState(0); // to update theme of game
   const boardRef = useRef(); // create a ref
   const isLightTheme = themeKeys[themeIndex] === "ocean" || themeKeys[themeIndex] === "classic" ; // for congrat text black 
 

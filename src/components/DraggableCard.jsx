@@ -19,7 +19,7 @@ export default function DraggableCard({ card, origin, highlight }) {
       : undefined,
     zIndex: isDragging ? 9999 : "auto",
     position: "relative",
-    cursor: card.faceUp ? "grab" : "default", // optional visual cue
+    cursor: card.faceUp ? "grab" : "default", 
 
     transition: "box-shadow 0.3s ease, transform 0.2s ease",
     boxShadow: highlight

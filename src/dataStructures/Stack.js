@@ -5,10 +5,12 @@ export default class Stack {
         this.List = new LinkedList();
     }
 
+    // ---------- Insert at start ----------
     push(x) {
         this.List.insertAtHead(x);
     }
 
+    // ---------- Delete at start ----------
     pop() {
         if (this.isEmpty()) {
             console.warn("Underflow...cannot remove more")
@@ -57,7 +59,7 @@ export default class Stack {
         return this.List.toArray();
     }
 
-
+    // ---------- Cloning game state ----------
     clone() {
         const newStack = new Stack();
         newStack.List = this.List.clone();
