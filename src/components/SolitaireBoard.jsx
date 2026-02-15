@@ -36,8 +36,8 @@ const mouseSensor = useSensor(MouseSensor);
     // Press and hold for 250ms or move 5px to start dragging
     // This prevents accidental drags when trying to scroll the page
     activationConstraint: {
-      delay: 150,
-      tolerance: 15,
+      delay: 100,
+      tolerance: 20,
     },
   });
 
