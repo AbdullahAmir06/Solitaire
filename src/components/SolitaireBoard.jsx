@@ -1,3 +1,11 @@
+import {
+  DndContext,
+  TouchSensor,
+  MouseSensor,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from "@dnd-kit/core";
 import React, { useState, useRef, act, useImperativeHandle, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Card from "@heruka_urgyen/react-playing-cards";
@@ -5,7 +13,7 @@ import GameLogic from './../game/GameLogic.js';
 import LinkedList from "../dataStructures/LinkedList";
 import Stack from "../dataStructures/Stack";
 import Queue from "../dataStructures/Queue";
-import { DndContext } from "@dnd-kit/core";
+// import { DndContext } from "@dnd-kit/core";
 import DraggableCard from "./DraggableCard.jsx";
 import DroppablePile from "./DroppablePile.jsx";
 import Confetti from "react-confetti";
@@ -22,6 +30,19 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
   const [highlightedTopCard, setHighlightedTopCard] = useState(null); // top card of target pile
   const [stockHighlight, setStockHighlight] = useState(false); // highlight the stock pile
   const { color1, color2, color3 } = popupColor; // for Congrats UI text color 
+
+const mouseSensor = useSensor(MouseSensor);
+  const touchSensor = useSensor(TouchSensor, {
+    // Press and hold for 250ms or move 5px to start dragging
+    // This prevents accidental drags when trying to scroll the page
+    activationConstraint: {
+      delay: 250,
+      tolerance: 5,
+    },
+  });
+
+  const sensors = useSensors(mouseSensor, touchSensor);
+
 
   // Expose showHint to parent via ref
   useImperativeHandle(ref, () => ({
@@ -155,11 +176,11 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
 
 
 
-  return (<DndContext onDragEnd={handleDragEnd}>
-    <div className="text-white p-4">
+  return (<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+    <div className="text-white pt-2 pb-10 px-4 min-h-screen w-full max-w-7xl mx-auto">
 
       {/* Stock + Waste */}
-      <div className="flex justify-between mb-10 mr-36">
+      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6 mb-12">
         <div className="flex gap-16">
 
           {/* Stock Pile */}
@@ -170,15 +191,14 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
               else game.drawFromStock();
               rerender();
             }}
-            className="w-[100px] h-[140px] rounded-lg flex items-center justify-center cursor-pointer select-none transition-shadow duration-300 bg-gray-700/70"
-            style={{
+            className="w-16 h-24 sm:w-24 sm:h-36 bg-gray-700/70 rounded-lg flex items-center justify-center cursor-pointer" style={{
               boxShadow: stockHighlight
                 ? "0 0 15px 5px rgba(255, 255, 0, 0.8)" // yellow glow
                 : "none"
             }}
           >
             {game.stock.size() > 0 ? (
-              <Card card="back" deckType="basic" height="140px" back />
+              <Card card="back" deckType="basic" height="100%" back />
             ) : (
               <div className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
                 <RefreshCw size={40} /> REDEAL
@@ -188,25 +208,32 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
 
 
           {/* Waste Pile */}
+          {/* Waste Pile */}
           {game.waste.length > 0 && (
             <div
               id="waste"
-              className="relative w-[160px] h-[140px] bg-transparent rounded-lg flex items-center justify-center cursor-grab select-none"
+              // Remove fixed width/height; use responsive classes
+              className="relative w-24 h-32 sm:w-28 sm:h-40 bg-transparent flex items-center justify-start"
             >
               <AnimatePresence>
                 {game.waste.slice(-3).map((card, i) => (
                   <motion.div
                     key={card.toString() + "-" + card.faceUp}
-                    initial={{ x: -20 * (2 - i), opacity: 0, scale: 0.9 }}
-                    animate={{ x: -20 * (2 - i), opacity: 1, scale: 1 }}
-                    exit={{ x: -30, opacity: 0, scale: 0.8 }}
-                    whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-                    transition={{ duration: 0.3, ease: "easeInOut", delay: i * 0.1 }}
+                    // Simplify motion: only animate opacity and scale to prevent "jumping"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.2 }}
                     className="absolute"
-                    style={{ left: `${i * 30}px`, zIndex: i + 1 }}
+                    // Use a smaller, consistent overlap (e.g., 20px or 25px)
+                    style={{
+                      left: `${i * 25}px`,
+                      zIndex: i + 1,
+                      width: '100%',
+                      height: '100%'
+                    }}
                   >
                     <DraggableCard
-                      id={`waste-${i}`}
                       card={card}
                       origin="waste"
                       highlight={(hintResult && hintResult.rank === card.rank && hintResult.suit === card.suit) || (highlightedTopCard && highlightedTopCard.rank === card.rank && highlightedTopCard.suit === card.suit)}
@@ -220,37 +247,37 @@ const SolitaireBoard = forwardRef(({ game, popupColor, lightTheme }, ref) => {
         </div>
 
         {/* Foundations */}
-        <div className="flex gap-6">
-          {Object.keys(game.foundations).map((suit, i) => { // it means my foundation-0 --> hearts and foundation-1 --> diamonds and foundation-2 --> clubs  and foundation-3 --> spades 
+        <div className="grid grid-cols-4 gap-2 sm:gap-4">
+          {Object.keys(game.foundations).map((suit, i) => {
             const pile = game.foundations[suit].toArray();
             const topCard = pile[0];
             return (
               <DroppablePile key={`foundation-${i}`} id={`foundation-${i}`} >
-                <div className="w-[100px] h-[140px] flex items-center justify-center">
+                {/* Added flex centering and h-full to make the placeholder center vertically */}
+                <div className="w-14 h-20 sm:w-24 sm:h-36 flex items-center justify-center">
                   {topCard ? (
-                    // <Card card={topCard.toString()} deckType="basic" height="140px" />
                     <DraggableCard
                       id={`foundation-${i}-top`}
                       card={topCard}
                       origin={`foundation-${i}`}
-                      highlight={(hintResult && hintResult.rank === topCard.rank && hintResult.suit === topCard.suit) || (highlightedTopCard && highlightedTopCard.rank === topCard.rank && highlightedTopCard.suit === topCard.suit)
-                      }
-
+                      highlight={(hintResult && hintResult.rank === topCard.rank && hintResult.suit === topCard.suit) ||
+                        (highlightedTopCard && highlightedTopCard.rank === topCard.rank && highlightedTopCard.suit === topCard.suit)}
                     />
                   ) : (
-                    <span className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
-                      <Layers size={30} /></span>
+                    /* Removed flex-col to keep the icon perfectly centered without extra spacing */
+                    <span className="flex items-center justify-center text-gray-400">
+                      <Layers size={30} />
+                    </span>
                   )}
                 </div>
               </DroppablePile>
-
             );
           })}
         </div>
       </div>
 
       {/* Tableau */}
-      <div className="flex justify-center gap-6">
+      <div className="grid grid-cols-7 gap-1 sm:gap-4 justify-items-center">
         {game.tableau.map((pile, i) => (
           <DroppablePile key={`tableau-${i}`} id={`tableau-${i}`} pile={pile.toArray()}>
             {(() => {

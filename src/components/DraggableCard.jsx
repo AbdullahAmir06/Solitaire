@@ -19,7 +19,11 @@ export default function DraggableCard({ card, origin, highlight }) {
       : undefined,
     zIndex: isDragging ? 9999 : "auto",
     position: "relative",
-    cursor: card.faceUp ? "grab" : "default", 
+    cursor: card.faceUp ? "grab" : "default",
+
+    touchAction: "none", // Prevents the browser from handling touch events
+    userSelect: "none",  // Prevents text selection during drag
+    WebkitUserSelect: "none",
 
     transition: "box-shadow 0.3s ease, transform 0.2s ease",
     boxShadow: highlight
@@ -29,12 +33,14 @@ export default function DraggableCard({ card, origin, highlight }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <div ref={setNodeRef} style={style} {...listeners} {...attributes} className="w-full">
       <Card
         card={card.faceUp ? card.toString() : "back"}
         deckType="basic"
-        height="140px"
+        // Use a responsive height or "100%" to let the parent control it
+        height="100%"
         back={!card.faceUp}
+        className="rounded-lg shadow-md"
       />
     </div>
   );
