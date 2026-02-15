@@ -177,11 +177,13 @@ const mouseSensor = useSensor(MouseSensor);
 
 
   return (<DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-    <div className="text-white pt-2 pb-10 px-4 min-h-screen w-full max-w-7xl mx-auto">
+    <div className="text-white pt-14 pb-10 min-h-screen w-full max-w-7xl mx-auto">
 
       {/* Stock + Waste */}
-      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-start gap-6 mb-12">
-        <div className="flex gap-16">
+      <div className="flex flex-row justify-between items-start gap-2 sm:gap-6 mb-8 w-full">
+       
+       
+        <div className="flex gap-2 sm:gap-12 items-start">
 
           {/* Stock Pile */}
           <div
@@ -191,7 +193,7 @@ const mouseSensor = useSensor(MouseSensor);
               else game.drawFromStock();
               rerender();
             }}
-            className="w-16 h-24 sm:w-24 sm:h-36 bg-gray-700/70 rounded-lg flex items-center justify-center cursor-pointer" style={{
+            className="w-12 h-18 sm:w-24 sm:h-36 bg-gray-700/70 rounded-lg flex items-center justify-center cursor-pointer" style={{
               boxShadow: stockHighlight
                 ? "0 0 15px 5px rgba(255, 255, 0, 0.8)" // yellow glow
                 : "none"
@@ -200,7 +202,7 @@ const mouseSensor = useSensor(MouseSensor);
             {game.stock.size() > 0 ? (
               <Card card="back" deckType="basic" height="100%" back />
             ) : (
-              <div className="text-sm flex flex-col gap-2 items-center justify-center text-gray-400">
+              <div className="text-[10px] sm:text-sm flex flex-col items-center text-gray-400">
                 <RefreshCw size={40} /> REDEAL
               </div>
             )}
@@ -213,7 +215,7 @@ const mouseSensor = useSensor(MouseSensor);
             <div
               id="waste"
               // Remove fixed width/height; use responsive classes
-              className="relative w-16 h-24 sm:w-24 sm:h-36 bg-transparent flex items-center justify-start"
+              className="relative w-12 h-18 sm:w-24 sm:h-36 bg-transparent"
             >
               <AnimatePresence>
                 {game.waste.slice(-3).map((card, i) => (
@@ -224,13 +226,13 @@ const mouseSensor = useSensor(MouseSensor);
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute"
+                    className="absolute h-full w-full"
                     // Use a smaller, consistent overlap (e.g., 20px or 25px)
                     style={{
-                      left: `${i * 25}px`,
+                      left: `${i * 15}px`,
                       zIndex: i + 1,
-                      width: '100%',
-                      height: '100%'
+                      // width: '100%',
+                      // height: '100%'
                     }}
                   >
                     <DraggableCard
@@ -254,7 +256,7 @@ const mouseSensor = useSensor(MouseSensor);
             return (
               <DroppablePile key={`foundation-${i}`} id={`foundation-${i}`} >
                 {/* Added flex centering and h-full to make the placeholder center vertically */}
-                <div className="w-14 h-20 sm:w-24 sm:h-36 flex items-center justify-center">
+                <div className="w-10 h-14 sm:w-24 sm:h-36 flex items-center justify-center">
                   {topCard ? (
                     <DraggableCard
                       id={`foundation-${i}-top`}
