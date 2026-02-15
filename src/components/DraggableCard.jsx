@@ -25,7 +25,7 @@ export default function DraggableCard({ card, origin, highlight }) {
     userSelect: "none",  // Prevents text selection during drag
     WebkitUserSelect: "none",
 
-    transition: "box-shadow 0.3s ease, transform 0.2s ease",
+    transition: isDragging ? "none" : "box-shadow 0.3s ease, transform 0.2s ease",
     boxShadow: highlight
       ? "0 0 15px 5px rgba(255, 255, 0, 0.8)" // yellow glow for hint
       : "none",

@@ -213,7 +213,7 @@ const mouseSensor = useSensor(MouseSensor);
             <div
               id="waste"
               // Remove fixed width/height; use responsive classes
-              className="relative w-24 h-32 sm:w-28 sm:h-40 bg-transparent flex items-center justify-start"
+              className="relative w-16 h-24 sm:w-24 sm:h-36 bg-transparent flex items-center justify-start"
             >
               <AnimatePresence>
                 {game.waste.slice(-3).map((card, i) => (
